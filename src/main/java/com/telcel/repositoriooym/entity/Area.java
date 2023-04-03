@@ -9,16 +9,16 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "area_responsable")
-public class AreaResponsableProyecto {
+@Table(name = "area")
+public class Area {
 
     /**
-     * Identificador unico de la clase AreaResponsableProyecto
+     * Identificador unico de la clase Area
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_area")
-    private Long idAreaResponsableProyecto;
+    private Long idArea;
 
     /**
      * Nombre del area del responsable del proyecto

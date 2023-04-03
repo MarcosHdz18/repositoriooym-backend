@@ -10,16 +10,16 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "responsable_proyecto")
-public class ResponsableProyecto {
+@Table(name = "responsable")
+public class Responsable {
 
     /**
-     * Identificador unico de la clase ResponsableProyecto
+     * Identificador unico de la clase Responsable
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_responsable_proyecto")
-    private Long idResponsableProyecto;
+    @Column(name = "idResponsable")
+    private Long idResponsable;
 
     /**
      * Nombre del responsable del proyecto
@@ -50,7 +50,7 @@ public class ResponsableProyecto {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    private AreaResponsableProyecto areaResponsableProyecto;
+    private Area area;
 
     /**
      * Serialization del objeto

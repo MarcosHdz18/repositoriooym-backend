@@ -1,6 +1,6 @@
 package com.telcel.repositoriooym.response;
 
-import com.telcel.repositoriooym.entity.AreaResponsableProyecto;
+import com.telcel.repositoriooym.entity.Area;
 import lombok.Data;
 
 import java.util.List;
@@ -10,10 +10,10 @@ import java.util.List;
  */
 
 @Data
-public class AreaResponsableProyectoResponse {
+public class AreaResponse {
 
     /**
      * Lista de areas
      */
-    private List<AreaResponsableProyecto> areas;
+    private List<Area> areas;
 }

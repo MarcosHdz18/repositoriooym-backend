@@ -9,10 +9,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResponsableProyectoResponseRest extends ResponseRest {
+public class ResponsableResponseRest extends ResponseRest {
 
     /**
      * Objeto con la respuesta del metadata
      */
-    private ResponsableProyectoResponse responsableProyectoResponse = new ResponsableProyectoResponse();
+    private ResponsableResponse responsableResponse = new ResponsableResponse();
 }

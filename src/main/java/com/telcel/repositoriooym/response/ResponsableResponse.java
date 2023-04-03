@@ -1,6 +1,6 @@
 package com.telcel.repositoriooym.response;
 
-import com.telcel.repositoriooym.entity.ResponsableProyecto;
+import com.telcel.repositoriooym.entity.Responsable;
 import lombok.Data;
 
 import java.util.List;
@@ -10,11 +10,11 @@ import java.util.List;
  */
 
 @Data
-public class ResponsableProyectoResponse {
+public class ResponsableResponse {
 
     /**
      * Lista de responsables
       */
-    private List<ResponsableProyecto> responsables;
+    private List<Responsable> responsables;
 
 }

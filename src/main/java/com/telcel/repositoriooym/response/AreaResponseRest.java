@@ -8,11 +8,11 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class AreaResponsableProyectoResponseRest extends ResponseRest {
+public class AreaResponseRest extends ResponseRest {
 
     /**
      * Objeto con la respuesta del metadata
       */
-    private AreaResponsableProyectoResponse areaResponsableProyectoResponse = new AreaResponsableProyectoResponse();
+    private AreaResponse areaResponse = new AreaResponse();
 
 }
