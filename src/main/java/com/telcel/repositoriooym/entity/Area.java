@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "area")
+@Table(name = "areas")
 public class Area {
 
     /**

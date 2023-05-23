@@ -3,9 +3,14 @@ package com.telcel.repositoriooym.controller;
 import com.telcel.repositoriooym.entity.Area;
 import com.telcel.repositoriooym.response.AreaResponseRest;
 import com.telcel.repositoriooym.service.IAreaService;
+import com.telcel.repositoriooym.utils.AreaExcelExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author marcos.hernandez
@@ -70,5 +75,25 @@ public class AreaRestController {
     @DeleteMapping("/areas/{idArea}")
     public ResponseEntity<AreaResponseRest> deleteAreaById(@PathVariable Long idArea) {
         return this.areaService.deleteById(idArea);
+    }
+
+    /**
+     * Metodo que realizara la exportacion a excel
+     * @param response Objeto de tipo HttpServletResponse
+     * @throws IOException Excepcion que se lanzara cuando exista algun error de exportacion
+     */
+    @GetMapping("/areas/export/excel")
+    public void exportDataExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=datos_departamentos";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<AreaResponseRest> areas = this.areaService.findAll();
+
+        AreaExcelExporter fileExcelExporter = new AreaExcelExporter(Objects.requireNonNull(areas.getBody()).getAreaResponse().getAreas());
+        fileExcelExporter.exportData(response);
     }
 }
