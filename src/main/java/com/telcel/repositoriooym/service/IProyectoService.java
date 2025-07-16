@@ -3,10 +3,12 @@ package com.telcel.repositoriooym.service;
 import com.telcel.repositoriooym.entity.Proyecto;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author marcos.hernandez
  */
+
 public interface IProyectoService {
 
     /**
@@ -35,7 +37,13 @@ public interface IProyectoService {
      * @param responsableId identificador unico para persistir el responsable del proyecto
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId);
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                     MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                     MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
+                                                     MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                     MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
+                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc);
 
     /**
      * Metodo que permite actualizar un objeto de tipo Proyecto en la base de datos
@@ -45,4 +53,11 @@ public interface IProyectoService {
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
     public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long idProyecto);
+
+    /**
+     * Metodo que realiza el borrado del proyecto por su identificador unico
+     * @param idProyecto identificador unico del proyecto
+     * @return ResponseEntity del objeto ProyectoResponseRest
+     */
+    public ResponseEntity<ProyectoResponseRest> delete(Long idProyecto);
 }

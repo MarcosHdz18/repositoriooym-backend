@@ -18,7 +18,7 @@ public class Responsable {
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idResponsable")
+    @Column(name = "id_responsable")
     private Long idResponsable;
 
     /**

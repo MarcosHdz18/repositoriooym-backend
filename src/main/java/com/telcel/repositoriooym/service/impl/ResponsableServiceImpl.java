@@ -1,10 +1,11 @@
-package com.telcel.repositoriooym.service;
+package com.telcel.repositoriooym.service.impl;
 
 import com.telcel.repositoriooym.entity.Area;
 import com.telcel.repositoriooym.entity.Responsable;
 import com.telcel.repositoriooym.repository.IAreaRepository;
 import com.telcel.repositoriooym.repository.IResponsableRepository;
 import com.telcel.repositoriooym.response.ResponsableResponseRest;
+import com.telcel.repositoriooym.service.IResponsableService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

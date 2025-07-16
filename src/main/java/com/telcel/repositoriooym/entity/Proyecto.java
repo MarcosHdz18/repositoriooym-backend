@@ -1,11 +1,16 @@
 package com.telcel.repositoriooym.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 /**
  * @author marcos.hernandez
@@ -14,6 +19,9 @@ import java.util.Date;
 @Entity
 @Table(name = "proyectos")
 public class Proyecto implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     /**
      * Identificador del proyecto
@@ -24,221 +32,158 @@ public class Proyecto implements Serializable {
     private Long idProyecto;
 
     /**
-     * Nombre del proyecto
+     * Atributo que identifica el calificativo del proyecto
      */
     @Column(name = "nombre", nullable = false)
     private String nombre;
 
     /**
-     * Fecha de liberacion del proyecto
+     * Atributo que identifica la fecha de publicacion
      */
     @Column(name = "fecha_liberacion")
-    private Date fechaLiberacion;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String fechaLiberacion;
 
     /**
-     * Documento f60 del proyecto
+     * Propiedad virtual que extrae el año de `fechaLiberacion`
+     * si es un ISO_DATE válido; o devuelve null.
+     */
+    @Transient
+    @JsonProperty("anio")
+    public Integer getAnio() {
+        if (fechaLiberacion == null) {
+            return null;
+        }
+        // si guardaste "Pendiente" u otro texto, no intentamos parsear
+        try {
+            return LocalDate.parse(fechaLiberacion, DateTimeFormatter.ISO_DATE)
+                    .getYear();
+        } catch (DateTimeParseException ex) {
+            // no era una fecha yyyy-MM-dd bien formateada
+            return null;
+        }
+    }
+
+    /**
+     * Atributo que identifica los nodos del proyecto
      */
     @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "f60", length = 1000)
-    private byte[] f60;
-
-    /**
-     * Low Level Design del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "lld", length = 1000)
-    private byte[] lld;
-
-    /**
-     * High Level Design del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "hld", length = 1000)
-    private byte[] hld;
-
-    /**
-     * Instructivos de Atencion de Alarmas del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "instructivos_alarmas", length = 1000)
-    private byte[] instructivosAlarmas;
-
-    /**
-     * Politicas de respaldo del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "politicas_backups", length = 1000)
-    private byte[] politicasBackups;
-
-    /**
-     * Rutinas de mantenimiento del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "rutinas_mantenimiento", length = 1000)
-    private byte[] rutinasMantenimiento;
-
-    /**
-     * Proceso renovacion de licencias del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "renovacion_licencias", length = 1000)
-    private byte[] renovacionLicencias;
-
-    /**
-     * Manuales de operacion del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "manuales_operacion", length = 1000)
-    private byte[] manualesOperacion;
-
-    /**
-     * Matriz de trazabilidad del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "matriz_trazabilidad", length = 1000)
-    private byte[] matrizTrazabilidad;
-
-    /**
-     * Layout del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "layout", length = 1000)
-    private byte[] layout;
-
-    /**
-     * SLA del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "sla", length = 1000)
-    private byte[] sla;
-
-    /**
-     * Formato de filtrado del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "formato_filtrado", length = 1000)
-    private byte[] formatoFiltrado;
-
-    /**
-     * Reporte fotografico del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "reporte_fotografico", length = 1000)
-    private byte[] reporteFotografico;
-
-    /**
-     * Asignacion de fuerza de los equipos del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "asignacion_fuerza", length = 1000)
-    private byte[] asignacionFuerza;
-
-    /**
-     * Asignacion de espacio de los equipos del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "asignacion_espacio", length = 1000)
-    private byte[] asignacionEspacio;
-
-    /**
-     * Inventario de Hardware de los equipos del proyecto
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "inventario_hardware", length = 1000)
-    private byte[] inventarioHardware;
-
-    /**
-     * Nodos o equipos del proyecto
-     */
-    @Column(name = "nodos")
+    @Column(name = "nodos", columnDefinition = "TEXT")
     private String nodos;
 
     /**
-     * Protocolo de aceptacion fisico del proyecto
+     * Ruta del documento F60
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "atp_fisico", length = 1000)
-    private byte[] atpFisico;
+    @Column(name = "f60", length = 512)
+    private String f60;
 
     /**
-     * Protocolo de aceptacion logico del proyecto
+     * Ruta del documento del diseño a bajo nivel
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "atp_logico", length = 1000)
-    private byte[] atpLogico;
+    @Column(name = "lld", length = 512)
+    private String lld;
 
     /**
-     * Reporte de transferencia operativa
+     * Ruta del documento del diseño a alto nivel
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "rto", length = 1000)
-    private byte[] rto;
+    @Column(name = "hld", length = 512)
+    private String hld;
 
     /**
-     * Carta responsiva de los accesos del proyecto para el area de IAAS
+     * Ruta del documento del inventario logico
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "carta_responsiva_iaas", length = 1000)
-    private byte[] cartaResponsivaIAAS;
+    @Column(name = "layout", length = 512)
+    private String layout;
 
     /**
-     * Carta responsiva de los accesos del proyecto para el area de Plataforma
+     * Ruta del documento para el soporte del proyecto
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "carta_responsiva_plataforma", length = 1000)
-    private byte[] cartaResponsivaPlataforma;
+    @Column(name = "sla", length = 512)
+    private String sla;
 
     /**
-     * Carta responsiva de los accesos del proyecto para el area de Storage
+     * Ruta del documento del reporte de la instalacion fisica
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "carta_responsiva_storage", length = 1000)
-    private byte[] cartaResponsivaStorage;
+    @Column(name = "reporte_fotografico", length = 512)
+    private String reporteFotografico;
 
     /**
-     * Carta responsiva de los accesos del proyecto para el area del GSOC
+     * Ruta del documento sobre la asignacion de fuerza y espacion en el proyecto
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "carta_responsiva_gsoc", length = 1000)
-    private byte[] cartaResponsivaGSOC;
+    @Column(name = "asignacion_fuerza_espacio", length = 512)
+    private String asignacionFuerzaEspacio;
 
     /**
-     * Carta responsiva de los accesos del proyecto para el area de HA
+     * Ruta del documento del inventario de hardware del proyecto
      */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @Column(name = "carta_responsiva_ha", length = 1000)
-    private byte[] cartaResponsivaHA;
+    @Column(name = "inventario_hardware", length = 512)
+    private String inventarioHardware;
 
     /**
-     * Responsable de Recepcion del proyecto
+     * Ruta del documento protocolo fisico sin firmar del proyecto
+     */
+    @Column(name = "atp_fisico", length = 512)
+    private String atpFisico;
+
+    /**
+     * Ruta del documento protocolo fisico firmado del proyecto
+     */
+    @Column(name = "atp_fisico_firmado", length = 512)
+    private String atpFisicoFirmado;
+
+    /**
+     * Ruta del documento protocolo logico sin firmar del proyecto
+     */
+    @Column(name = "atp_logico", length = 512)
+    private String atpLogico;
+
+    /**
+     * Ruta del documento protocolo logico firmado del proyecto
+     */
+    @Column(name = "atp_logico_firmado", length = 512)
+    private String atpLogicoFirmado;
+
+    /**
+     * Ruta del documento reporte de transferencia operativa del proyecto
+     */
+    @Column(name = "reporte_transferencia_operativa", length = 512)
+    private String reporteTransferenciaOperativa;
+
+    /**
+     * Ruta del documento carta responsiva del area de iaas del proyecto
+     */
+    @Column(name = "carta_responsiva_iaas", length = 512)
+    private String cartaResponsivaIaaS;
+
+    /**
+     * Ruta del documento carta responsiva del area de plataforma del proyecto
+     */
+    @Column(name = "carta_responsiva_plataforma", length = 512)
+    private String cartaResponsivaPlataforma;
+
+    /**
+     * Ruta del documento carta responsiva del area de storage del proyecto
+     */
+    @Column(name = "carta_responsiva_storage", length = 512)
+    private String cartaResponsivaStorage;
+
+    /**
+     * Ruta del documento carta responsiva del area de alta disponibilidad del proyecto
+     */
+    @Column(name = "carta_responsiva_ha", length = 512)
+    private String cartaResponsivaHa;
+
+    /**
+     * Ruta del documento carta responsiva del area de gsoc del proyecto
+     */
+    @Column(name = "carta_responsiva_gsoc", length = 512)
+    private String cartaResponsivaGsoc;
+
+    /**
+     * Responsable de recepcion del proyecto
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "id_responsable")
     private Responsable responsableProyecto;
-
-    private static final long serialVersionUID = 1540440495794585232L;
 }

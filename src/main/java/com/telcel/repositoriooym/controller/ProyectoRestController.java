@@ -1,0 +1,422 @@
+package com.telcel.repositoriooym.controller;
+
+import com.telcel.repositoriooym.entity.Proyecto;
+import com.telcel.repositoriooym.repository.IProyectoRepository;
+import com.telcel.repositoriooym.response.ProyectoResponseRest;
+import com.telcel.repositoriooym.service.IProyectoService;
+import com.telcel.repositoriooym.service.ISubirArchivoService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.beans.PropertyEditorSupport;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiFunction;
+
+/**
+ * @author marcos.hernandez
+ */
+
+@CrossOrigin(origins = "http://localhost:4200", exposedHeaders = "Content-Disposition")
+@RestController
+@RequestMapping("/api/v1")
+public class ProyectoRestController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProyectoRestController.class);
+
+    /**
+     * Objeto de tipo IProyectoRepository para el repositorio de la entidad Proyecto
+     */
+    @Autowired
+    private IProyectoRepository proyectoRepository;
+
+    /**
+     * Objeto de tipo IProyectoService que interactua con el DAO
+     */
+    @Autowired
+    private IProyectoService proyectoService;
+
+    /**
+     * Objeto de tipo ISubirArchivoService que ayudara a subir el archivo a la carpeta uploads
+     */
+    @Autowired
+    private ISubirArchivoService uploadFileService;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE;
+
+        binder.registerCustomEditor(LocalDate.class, new PropertyEditorSupport(){
+            @Override
+            public void setAsText(String text) throws IllegalArgumentException {
+                if (!StringUtils.hasText(text) || "Pendiente".equalsIgnoreCase(text.trim())) {
+                    setValue(null);
+                } else {
+                    setValue(LocalDate.parse(text.trim(), formatter));
+                }
+            }
+        });
+
+    }
+
+    /**
+     * Metodo que realiza la busqueda de todos los proyectos
+     * @return ResponseEntity
+     */
+    @GetMapping("/proyectos")
+    public ResponseEntity<ProyectoResponseRest> listaProyectos() {
+        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.findAll();
+        return response;
+    }
+
+    /**
+     * Metodo que realiza la busqueda por su identificador unico del proyecto
+     * @param idProyecto identificador unico del proyecto
+     * @return ResponseEntity
+     */
+    @GetMapping("/proyectos/{idProyecto}")
+    public ResponseEntity<ProyectoResponseRest> buscarProyectoById(@PathVariable Long idProyecto) {
+        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.findById(idProyecto);
+        return response;
+    }
+
+    /**
+     * Metodo que realiza la busqueda de un registro por su atributo nombre
+     * @param nombre atributo nombre por el que sera buscado el proyecto
+     * @return ResponseEntity de tipo ProyectoResponseRest con el proyecto por su atributo nombre
+     */
+    @GetMapping("/proyectos/filter/{nombre}")
+    public ResponseEntity<ProyectoResponseRest> buscarProyectoByNombre(@PathVariable String nombre) {
+
+        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.findByNombre(nombre);
+
+        return response;
+    }
+
+    /**
+     * Metodo que realiza la persistencia de los datos del objeto de tipo Proyecto
+     * @param fileF60 MultipartFile
+     * @param nombre String
+     * @param fechaLiberacion Date
+     * @param responsableId Long
+     * @return ResponseEntity
+     * @throws IOException Exception IO
+     */
+    @PostMapping("/proyectos")
+    public ResponseEntity<ProyectoResponseRest> guardarProyecto(
+            @RequestParam(value = "fileF60", required = false) MultipartFile fileF60,
+            @RequestParam(value = "fileLld", required = false) MultipartFile fileLld,
+            @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
+            @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
+            @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
+            @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
+            @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
+            @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
+            @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
+            @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
+            @RequestParam(value = "fileAtpLogico", required = false) MultipartFile fileAtpLogico,
+            @RequestParam(value = "fileAtpLogicoFirmado", required = false) MultipartFile fileAtpLogicoFirmado,
+            @RequestParam(value = "fileReporteTransferenciaOperativa", required = false) MultipartFile fileReporteTransferenciaOperativa,
+            @RequestParam(value = "fileCartaResponsivaIaaS", required = false) MultipartFile fileCartaResponsivaIaaS,
+            @RequestParam(value = "fileCartaResponsivaPlataforma", required = false) MultipartFile fileCartaResponsivaPlataforma,
+            @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
+            @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
+            @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam("nombre") String nombre,
+            @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
+            @RequestParam("nodos") String nodos,
+            @RequestParam("responsableId") Long responsableId) throws IOException {
+
+        // Inicializamos los valores de los objetos por default
+        ProyectoResponseRest respuesta = new ProyectoResponseRest();
+        respuesta.setMetaList(new ArrayList<>());
+        Map<String, String> meta = new HashMap<>();
+        respuesta.getMetaList().add(meta);
+
+        try {
+            Proyecto proyecto = new Proyecto();
+
+            /**
+             * Setear los valores de la data a los objetos pasados por argumento
+             */
+            proyecto.setNombre(nombre);
+            proyecto.setFechaLiberacion(fechaLiberacion);
+            proyecto.setNodos(nodos);
+
+            // Helper local para evitar repetir el patrón
+            BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
+                if (mpf != null && !mpf.isEmpty()) {
+                    try {
+                        // pasa primero la carpeta (nombre del proyecto) y luego el archivo
+                        return uploadFileService.copiarArchivoEnSubCarpeta(proyecto.getNombre(), mpf);
+                    } catch (IOException e) {
+                        // loggea el error
+                        if (logger.isErrorEnabled()) {
+                            logger.error("Error al copiar {} en subcarpeta {}: {}", mpf.getOriginalFilename(), proyecto.getNombre(), e.getMessage());
+                        }
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    return defecto;
+                }
+            };
+
+            proyecto.setF60(guardarODefault.apply(fileF60,"Pendiente") );
+            proyecto.setLld(guardarODefault.apply(fileLld,"Pendiente") );
+            proyecto.setHld(guardarODefault.apply(fileHld,"Pendiente") );
+            proyecto.setLayout(guardarODefault.apply(fileLayout,"Pendiente") );
+            proyecto.setSla(guardarODefault.apply(fileSla,"Pendiente") );
+            proyecto.setReporteFotografico(guardarODefault.apply(fileReporteFotografico,"Pendiente"));
+            proyecto.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio,"Pendiente"));
+            proyecto.setInventarioHardware(guardarODefault.apply(fileInventarioHardware,"Pendiente"));
+            proyecto.setAtpFisico(guardarODefault.apply(fileAtpFisico,"Pendiente"));
+            proyecto.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado,"Pendiente"));
+            proyecto.setAtpLogico(guardarODefault.apply(fileAtpLogico,"Pendiente"));
+            proyecto.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado,"Pendiente"));
+            proyecto.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa,"Pendiente"));
+            proyecto.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS,"Pendiente"));
+            proyecto.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma,"Pendiente"));
+            proyecto.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage,"Pendiente"));
+            proyecto.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa,"Pendiente"));
+            proyecto.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc,"Pendiente"));
+
+            this.proyectoService.save(proyecto, responsableId, fechaLiberacion , fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
+                    fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
+                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
+                    fileCartaResponsivaGsoc);
+
+            meta.put("code", "00");
+            meta.put("data", "Proyecto guardado con éxito");
+            return ResponseEntity.ok(respuesta);
+
+        }catch (Exception e) {
+            logger.error("Error al persistir el proyecto", e);
+            meta.put("code", "-1");
+            meta.put("data", "Error al persistir el proyecto en la base de datos");
+            return ResponseEntity.ok(respuesta);
+        }
+
+    }
+
+    /**
+     * Metodo que realiza la actualizacion del registro por su identificador unico
+     * @param fileF60
+     * @param fileLld
+     * @param fileHld
+     * @param fileLayout
+     * @param fileSla
+     * @param fileReporteFotografico
+     * @param fileAsignacionFuerzaEspacio
+     * @param fileInventarioHardware
+     * @param fileAtpFisico
+     * @param fileAtpFisicoFirmado
+     * @param fileAtpLogico
+     * @param fileAtpLogicoFirmado
+     * @param fileReporteTransferenciaOperativa
+     * @param fileCartaResponsivaIaaS
+     * @param fileCartaResponsivaPlataforma
+     * @param fileCartaResponsivaStorage
+     * @param fileCartaResponsivaHa
+     * @param fileCartaResponsivaGsoc
+     * @param nombre
+     * @param fechaLiberacion
+     * @param nodos
+     * @param responsableId
+     * @param idProyecto
+     * @return
+     * @throws IOException
+     */
+    @PutMapping("/proyectos/{idProyecto}")
+    public ResponseEntity<ProyectoResponseRest> updateProyecto(
+            @RequestParam("fileF60") MultipartFile fileF60,
+            @RequestParam("fileLld") MultipartFile fileLld,
+            @RequestParam("fileHld") MultipartFile fileHld,
+            @RequestParam("fileLayout") MultipartFile fileLayout,
+            @RequestParam("fileSla") MultipartFile fileSla,
+            @RequestParam("fileReporteFotografico") MultipartFile fileReporteFotografico,
+            @RequestParam("fileAsignacionFuerzaEspacio") MultipartFile fileAsignacionFuerzaEspacio,
+            @RequestParam("fileInventarioHardware") MultipartFile fileInventarioHardware,
+            @RequestParam("fileAtpFisico") MultipartFile fileAtpFisico,
+            @RequestParam("fileAtpFisicoFirmado") MultipartFile fileAtpFisicoFirmado,
+            @RequestParam("fileAtpLogico") MultipartFile fileAtpLogico,
+            @RequestParam("fileAtpLogicoFirmado") MultipartFile fileAtpLogicoFirmado,
+            @RequestParam("fileReporteTransferenciaOperativa") MultipartFile fileReporteTransferenciaOperativa,
+            @RequestParam("fileCartaResponsivaIaaS") MultipartFile fileCartaResponsivaIaaS,
+            @RequestParam("fileCartaResponsivaPlataforma") MultipartFile fileCartaResponsivaPlataforma,
+            @RequestParam("fileCartaResponsivaStorage") MultipartFile fileCartaResponsivaStorage,
+            @RequestParam("fileCartaResponsivaHa") MultipartFile fileCartaResponsivaHa,
+            @RequestParam("fileCartaResponsivaGsoc") MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam("nombre") String nombre,
+            @RequestParam("fechaLiberacion") String fechaLiberacion,
+            @RequestParam("nodos") String nodos,
+            @RequestParam("responsableId") Long responsableId,
+            @PathVariable Long idProyecto) throws IOException {
+
+        Proyecto proyecto = new Proyecto();
+
+        /**
+         * Setear los valores de la data a los objetos pasados por argumento
+         */
+        proyecto.setNombre(nombre);
+        proyecto.setFechaLiberacion(fechaLiberacion);
+        proyecto.setNodos(nodos);
+
+        // F60
+        String archivoF60 = this.uploadFileService.copiarArchivo(fileF60);
+        proyecto.setF60(archivoF60);
+
+        // Lld
+        String archivoLld = this.uploadFileService.copiarArchivo(fileLld);
+        proyecto.setLld(archivoLld);
+
+        // Hld
+        String archivoHld = this.uploadFileService.copiarArchivo(fileHld);
+        proyecto.setHld(archivoHld);
+
+        // Layout
+        String archivoLayout = this.uploadFileService.copiarArchivo(fileLayout);
+        proyecto.setLayout(archivoLayout);
+
+        // Sla
+        String archivoSla = this.uploadFileService.copiarArchivo(fileSla);
+        proyecto.setSla(archivoSla);
+
+        // Reporte Fotografico
+        String archivoReporteFotografico = this.uploadFileService.copiarArchivo(fileReporteFotografico);
+        proyecto.setReporteFotografico(archivoReporteFotografico);
+
+        // Asignacion Fuerza y Espacio
+        String archivoAsignacionFuerzaEspacio = this.uploadFileService.copiarArchivo(fileAsignacionFuerzaEspacio);
+        proyecto.setAsignacionFuerzaEspacio(archivoAsignacionFuerzaEspacio);
+
+        // Inventario de hardware
+        String archivoInventarioHardware = this.uploadFileService.copiarArchivo(fileInventarioHardware);
+        proyecto.setInventarioHardware(archivoInventarioHardware);
+
+        // Atp fisico
+        String archivoAtpFisico = this.uploadFileService.copiarArchivo(fileAtpFisico);
+        proyecto.setAtpFisico(archivoAtpFisico);
+
+        // Atp fisico firmado
+        String archivoAtpFisicoFirmado = this.uploadFileService.copiarArchivo(fileAtpFisicoFirmado);
+        proyecto.setAtpFisicoFirmado(archivoAtpFisicoFirmado);
+
+        // Atp logico
+        String archivoAtpLogico = this.uploadFileService.copiarArchivo(fileAtpLogico);
+        proyecto.setAtpLogico(archivoAtpLogico);
+
+        // Atp logico firmado
+        String archivoAtpLogicoFirmado = this.uploadFileService.copiarArchivo(fileAtpLogicoFirmado);
+        proyecto.setAtpLogicoFirmado(archivoAtpLogicoFirmado);
+
+        // Reporte de Transferencia Operativa
+        String archivoReporteTransferenciaOperativa = this.uploadFileService.copiarArchivo(fileReporteTransferenciaOperativa);
+        proyecto.setReporteTransferenciaOperativa(archivoReporteTransferenciaOperativa);
+
+        // Carta responsiva IaaS
+        String archivoCartaResponsivaIaaS = this.uploadFileService.copiarArchivo(fileCartaResponsivaIaaS);
+        proyecto.setCartaResponsivaIaaS(archivoCartaResponsivaIaaS);
+
+        // Carta responsiva Plataforma
+        String archivoCartaResponsivaPlataforma = this.uploadFileService.copiarArchivo(fileCartaResponsivaPlataforma);
+        proyecto.setCartaResponsivaPlataforma(archivoCartaResponsivaPlataforma);
+
+        // Carta responsiva Storage
+        String archivoCartaResponsivaStorage = this.uploadFileService.copiarArchivo(fileCartaResponsivaStorage);
+        proyecto.setCartaResponsivaStorage(archivoCartaResponsivaStorage);
+
+        // Carta responsiva Ha
+        String archivoCartaResponsivaHa = this.uploadFileService.copiarArchivo(fileCartaResponsivaHa);
+        proyecto.setCartaResponsivaHa(archivoCartaResponsivaHa);
+
+        //Carta responsiva Gsoc
+        String archivoCartaResponsivaGsoc = this.uploadFileService.copiarArchivo(fileCartaResponsivaGsoc);
+        proyecto.setCartaResponsivaGsoc(archivoCartaResponsivaGsoc);
+
+        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.update(proyecto, responsableId, idProyecto);
+
+        return response;
+    }
+
+    /**
+     * Descarga un archivo de un proyecto según el documento indicado.
+     * Ejemplo: GET /api/v1/proyectos/5/archivo/f60
+     * @param idProyecto identificador del proyecto
+     * @param documento documento a descargar
+     * @return una URL con el archivo a descargar
+     * @throws MalformedURLException Excepcion si la URL se encuentra mal formada
+     */
+    @GetMapping(value = "/proyectos/{idProyecto}/archivo/{documento}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> descargarDocumentoProyecto(@PathVariable Long idProyecto, @PathVariable String documento) throws MalformedURLException {
+
+        // 1. Buscar entidad (proyecto)
+        Proyecto proyecto = proyectoRepository.findById(idProyecto).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Proyecto no encontrado"));
+
+        // 2. Mapear documento -> nombre de archivo
+        String filename;
+        switch (documento.toLowerCase()) {
+            case "f60": filename = proyecto.getF60(); break;
+            case "lld": filename = proyecto.getLld(); break;
+            case "hld": filename = proyecto.getHld(); break;
+            case "layout": filename = proyecto.getLayout(); break;
+            case "sla": filename = proyecto.getSla(); break;
+            case "reportefotografico": filename = proyecto.getReporteFotografico(); break;
+            case "asignacionfuerzaespacio": filename = proyecto.getAsignacionFuerzaEspacio(); break;
+            case "inventariohardware": filename = proyecto.getInventarioHardware(); break;
+            case "atpfisico": filename = proyecto.getAtpFisico(); break;
+            case "atpfisicofirmado": filename = proyecto.getAtpFisicoFirmado(); break;
+            case "atplogico": filename = proyecto.getAtpLogico(); break;
+            case "atplogicofirmado": filename = proyecto.getAtpLogicoFirmado(); break;
+            case "reportetransferenciaoperativa": filename = proyecto.getReporteTransferenciaOperativa(); break;
+            case "cartaresponsivaiaas": filename = proyecto.getCartaResponsivaIaaS(); break;
+            case "cartaresponsivaplataforma": filename = proyecto.getCartaResponsivaPlataforma(); break;
+            case "cartaresponsivastorage": filename = proyecto.getCartaResponsivaStorage(); break;
+            case "cartaresponsivaha": filename = proyecto.getCartaResponsivaHa(); break;
+            case "cartaresponsivagsoc": filename = proyecto.getCartaResponsivaGsoc(); break;
+            default:
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Documento no válido: " + documento);
+        }
+
+        if (filename == null || filename.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe archivo para el documento" + documento);
+        }
+
+        // 3. Cargar recurso y devolver con header de descarga
+        Resource recurso = uploadFileService.cargarArchivo(filename);
+
+        // return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + recurso.getFilename() + "\"").body(recurso);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + recurso.getFilename() + "\"").body(recurso);
+    }
+
+    /**
+     * Metodo que realiza el borrado de un registro por su identificador unico
+     * @param idProyecto identificador unico del proyecto a eliminar
+     * @return ResponseEntity de tipo ProyectoResponseRest
+     */
+    @DeleteMapping("/proyectos/{idProyecto}")
+    public ResponseEntity<ProyectoResponseRest> deleteProyectoById(@PathVariable Long idProyecto) {
+
+        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.delete(idProyecto);
+
+        return response;
+    }
+}

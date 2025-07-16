@@ -2,6 +2,8 @@ package com.telcel.repositoriooym.response;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author marcos.hernandez
@@ -15,10 +17,16 @@ public class ResponseRest {
     private ArrayList<HashMap<String, String>> metadata = new ArrayList<>();
 
     /**
+     * Nuevo response
+     */
+    private ArrayList<Map<String, String>> metaList = new ArrayList<>();
+
+    /**
      * Metodo que obtiene la metadata del response
      * @return la metadata del response
      */
     public ArrayList<HashMap<String, String>> getMetadata() {
+
         return this.metadata;
     }
 
@@ -38,4 +46,19 @@ public class ResponseRest {
         metadata.add(map);
     }
 
+    /**
+     * Nuevo get de MetaList
+     * @return
+     */
+    public List<Map<String, String>> getMetaList() {
+        return this.metaList;
+    }
+
+    /**
+     * Nuevo set de MetaList
+     * @param metaList
+     */
+    public void setMetaList(ArrayList<Map<String, String>> metaList) {
+        this.metaList = metaList;
+    }
 }
