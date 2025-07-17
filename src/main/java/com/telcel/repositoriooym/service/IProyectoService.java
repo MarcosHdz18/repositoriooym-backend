@@ -49,10 +49,15 @@ public interface IProyectoService {
      * Metodo que permite actualizar un objeto de tipo Proyecto en la base de datos
      * @param proyecto objeto de tipo Proyecto que sera el actualizado mediante su identificador unico
      * @param responsableId objeto de tipo ResponsableProyecto que se actualizara mediante su identificador unico
-     * @param idProyecto identificador unico del proyecto del objeto a actualizar
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long idProyecto);
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                       MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
+                                                       MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                       MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc);
 
     /**
      * Metodo que realiza el borrado del proyecto por su identificador unico

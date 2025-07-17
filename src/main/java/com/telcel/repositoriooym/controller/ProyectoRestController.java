@@ -2,6 +2,7 @@ package com.telcel.repositoriooym.controller;
 
 import com.telcel.repositoriooym.entity.Proyecto;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
+import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
 import com.telcel.repositoriooym.service.ISubirArchivoService;
@@ -207,9 +208,9 @@ public class ProyectoRestController {
             return ResponseEntity.ok(respuesta);
 
         }catch (Exception e) {
-            logger.error("Error al persistir el proyecto", e);
+            logger.error("Error al persistir el proyecto metodo save", e);
             meta.put("code", "-1");
-            meta.put("data", "Error al persistir el proyecto en la base de datos");
+            meta.put("data", "Error al crear el proyecto");
             return ResponseEntity.ok(respuesta);
         }
 
@@ -245,114 +246,59 @@ public class ProyectoRestController {
      */
     @PutMapping("/proyectos/{idProyecto}")
     public ResponseEntity<ProyectoResponseRest> updateProyecto(
-            @RequestParam("fileF60") MultipartFile fileF60,
-            @RequestParam("fileLld") MultipartFile fileLld,
-            @RequestParam("fileHld") MultipartFile fileHld,
-            @RequestParam("fileLayout") MultipartFile fileLayout,
-            @RequestParam("fileSla") MultipartFile fileSla,
-            @RequestParam("fileReporteFotografico") MultipartFile fileReporteFotografico,
-            @RequestParam("fileAsignacionFuerzaEspacio") MultipartFile fileAsignacionFuerzaEspacio,
-            @RequestParam("fileInventarioHardware") MultipartFile fileInventarioHardware,
-            @RequestParam("fileAtpFisico") MultipartFile fileAtpFisico,
-            @RequestParam("fileAtpFisicoFirmado") MultipartFile fileAtpFisicoFirmado,
-            @RequestParam("fileAtpLogico") MultipartFile fileAtpLogico,
-            @RequestParam("fileAtpLogicoFirmado") MultipartFile fileAtpLogicoFirmado,
-            @RequestParam("fileReporteTransferenciaOperativa") MultipartFile fileReporteTransferenciaOperativa,
-            @RequestParam("fileCartaResponsivaIaaS") MultipartFile fileCartaResponsivaIaaS,
-            @RequestParam("fileCartaResponsivaPlataforma") MultipartFile fileCartaResponsivaPlataforma,
-            @RequestParam("fileCartaResponsivaStorage") MultipartFile fileCartaResponsivaStorage,
-            @RequestParam("fileCartaResponsivaHa") MultipartFile fileCartaResponsivaHa,
-            @RequestParam("fileCartaResponsivaGsoc") MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam(value = "fileF60", required = false) MultipartFile fileF60,
+            @RequestParam(value = "fileLld", required = false) MultipartFile fileLld,
+            @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
+            @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
+            @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
+            @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
+            @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
+            @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
+            @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
+            @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
+            @RequestParam(value = "fileAtpLogico", required = false) MultipartFile fileAtpLogico,
+            @RequestParam(value = "fileAtpLogicoFirmado", required = false) MultipartFile fileAtpLogicoFirmado,
+            @RequestParam(value = "fileReporteTransferenciaOperativa", required = false) MultipartFile fileReporteTransferenciaOperativa,
+            @RequestParam(value = "fileCartaResponsivaIaaS", required = false) MultipartFile fileCartaResponsivaIaaS,
+            @RequestParam(value = "fileCartaResponsivaPlataforma", required = false) MultipartFile fileCartaResponsivaPlataforma,
+            @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
+            @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
+            @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
             @RequestParam("nombre") String nombre,
-            @RequestParam("fechaLiberacion") String fechaLiberacion,
+            @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
             @RequestParam("nodos") String nodos,
             @RequestParam("responsableId") Long responsableId,
             @PathVariable Long idProyecto) throws IOException {
 
-        Proyecto proyecto = new Proyecto();
+        // Construimos la respuesta con el código de error si no se puede actualizar el proyecto
+        ProyectoResponseRest response = new ProyectoResponseRest();
+        response.setMetaList(new ArrayList<>());
+        Map<String, String> meta = new HashMap<>();
+        response.getMetaList().add(meta);
 
-        /**
-         * Setear los valores de la data a los objetos pasados por argumento
-         */
-        proyecto.setNombre(nombre);
-        proyecto.setFechaLiberacion(fechaLiberacion);
-        proyecto.setNodos(nodos);
+        try {
+            // Seteamos los valores del proyecto
+            Proyecto proyecto = new Proyecto();
+            proyecto.setIdProyecto(idProyecto);
+            proyecto.setNombre(nombre);
+            proyecto.setFechaLiberacion(fechaLiberacion);
+            proyecto.setNodos(nodos);
 
-        // F60
-        String archivoF60 = this.uploadFileService.copiarArchivo(fileF60);
-        proyecto.setF60(archivoF60);
+            this.proyectoService.update(proyecto, responsableId, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
+                    fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
+                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
+                    fileCartaResponsivaGsoc);
 
-        // Lld
-        String archivoLld = this.uploadFileService.copiarArchivo(fileLld);
-        proyecto.setLld(archivoLld);
+            meta.put("code", "00");
+            meta.put("data", "Proyecto guardado con éxito");
+            return ResponseEntity.ok(response);
 
-        // Hld
-        String archivoHld = this.uploadFileService.copiarArchivo(fileHld);
-        proyecto.setHld(archivoHld);
-
-        // Layout
-        String archivoLayout = this.uploadFileService.copiarArchivo(fileLayout);
-        proyecto.setLayout(archivoLayout);
-
-        // Sla
-        String archivoSla = this.uploadFileService.copiarArchivo(fileSla);
-        proyecto.setSla(archivoSla);
-
-        // Reporte Fotografico
-        String archivoReporteFotografico = this.uploadFileService.copiarArchivo(fileReporteFotografico);
-        proyecto.setReporteFotografico(archivoReporteFotografico);
-
-        // Asignacion Fuerza y Espacio
-        String archivoAsignacionFuerzaEspacio = this.uploadFileService.copiarArchivo(fileAsignacionFuerzaEspacio);
-        proyecto.setAsignacionFuerzaEspacio(archivoAsignacionFuerzaEspacio);
-
-        // Inventario de hardware
-        String archivoInventarioHardware = this.uploadFileService.copiarArchivo(fileInventarioHardware);
-        proyecto.setInventarioHardware(archivoInventarioHardware);
-
-        // Atp fisico
-        String archivoAtpFisico = this.uploadFileService.copiarArchivo(fileAtpFisico);
-        proyecto.setAtpFisico(archivoAtpFisico);
-
-        // Atp fisico firmado
-        String archivoAtpFisicoFirmado = this.uploadFileService.copiarArchivo(fileAtpFisicoFirmado);
-        proyecto.setAtpFisicoFirmado(archivoAtpFisicoFirmado);
-
-        // Atp logico
-        String archivoAtpLogico = this.uploadFileService.copiarArchivo(fileAtpLogico);
-        proyecto.setAtpLogico(archivoAtpLogico);
-
-        // Atp logico firmado
-        String archivoAtpLogicoFirmado = this.uploadFileService.copiarArchivo(fileAtpLogicoFirmado);
-        proyecto.setAtpLogicoFirmado(archivoAtpLogicoFirmado);
-
-        // Reporte de Transferencia Operativa
-        String archivoReporteTransferenciaOperativa = this.uploadFileService.copiarArchivo(fileReporteTransferenciaOperativa);
-        proyecto.setReporteTransferenciaOperativa(archivoReporteTransferenciaOperativa);
-
-        // Carta responsiva IaaS
-        String archivoCartaResponsivaIaaS = this.uploadFileService.copiarArchivo(fileCartaResponsivaIaaS);
-        proyecto.setCartaResponsivaIaaS(archivoCartaResponsivaIaaS);
-
-        // Carta responsiva Plataforma
-        String archivoCartaResponsivaPlataforma = this.uploadFileService.copiarArchivo(fileCartaResponsivaPlataforma);
-        proyecto.setCartaResponsivaPlataforma(archivoCartaResponsivaPlataforma);
-
-        // Carta responsiva Storage
-        String archivoCartaResponsivaStorage = this.uploadFileService.copiarArchivo(fileCartaResponsivaStorage);
-        proyecto.setCartaResponsivaStorage(archivoCartaResponsivaStorage);
-
-        // Carta responsiva Ha
-        String archivoCartaResponsivaHa = this.uploadFileService.copiarArchivo(fileCartaResponsivaHa);
-        proyecto.setCartaResponsivaHa(archivoCartaResponsivaHa);
-
-        //Carta responsiva Gsoc
-        String archivoCartaResponsivaGsoc = this.uploadFileService.copiarArchivo(fileCartaResponsivaGsoc);
-        proyecto.setCartaResponsivaGsoc(archivoCartaResponsivaGsoc);
-
-        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.update(proyecto, responsableId, idProyecto);
-
-        return response;
+        } catch (Exception e) {
+            logger.error("Error al persistir el proyecto metodo update", e);
+            meta.put("code", "-1");
+            meta.put("data", "Error al actualizar el proyecto");
+            return ResponseEntity.ok(response);
+        }
     }
 
     /**

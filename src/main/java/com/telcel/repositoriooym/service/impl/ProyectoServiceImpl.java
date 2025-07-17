@@ -1,24 +1,30 @@
 package com.telcel.repositoriooym.service.impl;
 
+import com.telcel.repositoriooym.controller.ProyectoRestController;
 import com.telcel.repositoriooym.entity.Proyecto;
 import com.telcel.repositoriooym.entity.Responsable;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
 import com.telcel.repositoriooym.repository.IResponsableRepository;
+import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
 import com.telcel.repositoriooym.service.ISubirArchivoService;
+import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  * @author marcos.hernandez
@@ -26,6 +32,8 @@ import java.util.Optional;
 
 @Service
 public class ProyectoServiceImpl implements IProyectoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(ProyectoRestController.class);
 
     /**
      * Objeto de tipo IProyectoRepository con el CRUD respectivo
@@ -353,78 +361,85 @@ public class ProyectoServiceImpl implements IProyectoService {
     /**
      * @param proyecto      objeto de tipo Proyecto que sera el actualizado mediante su identificador unico
      * @param responsableId objeto de tipo ResponsableProyecto que se actualizara mediante su identificador unico
-     * @param idProyecto    identificador unico del proyecto del objeto a actualizar
      * @return
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long idProyecto) {
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                       MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
+                                                       MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                       MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc) {
 
         ProyectoResponseRest response = new ProyectoResponseRest();
-        List<Proyecto> proyectos = new ArrayList<>();
+
+        response.setMetaList(new ArrayList<>());
+        response.setProyectoResponse(new ProyectoResponse());
 
         try {
-            // Buscar el responsable a setear en el proyecto
-            Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
+            // Recuperamos el proyecto existente o lanzamos excepcion si no existe en la base de datos
+            Proyecto proyectoGuardado = proyectoRepository.findById(proyecto.getIdProyecto()).orElseThrow(() ->
+                    new EntityNotFoundException("Proyecto con id " + proyecto.getIdProyecto() + " no existe"));
 
-            if (responsable.isPresent()) {
-                proyecto.setResponsableProyecto(responsable.get());
-            } else {
-                response.setMetadata("Respuesta fallida", "-1", "Responsable no encontrado asociado al proyecto");
-                return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.NOT_FOUND);
-            }
+            // Actualizamos los campos basicos (Strings)
+            proyectoGuardado.setNombre(proyecto.getNombre());
+            proyectoGuardado.setFechaLiberacion(fechaLiberacion);
+            proyectoGuardado.setNodos(proyecto.getNodos());
 
-            // Busqueda del proyecto a actualizar
-            Optional<Proyecto> proyectoToUpdated = this.proyectoRepository.findById(idProyecto);
-
-            if (proyectoToUpdated.isPresent()) {
-
-                // Actualizacion del proyecto
-                proyectoToUpdated.get().setNombre(proyecto.getNombre());
-                proyectoToUpdated.get().setFechaLiberacion(proyecto.getFechaLiberacion());
-                proyectoToUpdated.get().setF60(proyecto.getF60());
-                proyectoToUpdated.get().setLld(proyecto.getLld());
-                proyectoToUpdated.get().setHld(proyecto.getHld());
-                proyectoToUpdated.get().setLayout(proyecto.getLayout());
-                proyectoToUpdated.get().setSla(proyecto.getSla());
-                proyectoToUpdated.get().setReporteFotografico(proyecto.getReporteFotografico());
-                proyectoToUpdated.get().setAsignacionFuerzaEspacio(proyecto.getAsignacionFuerzaEspacio());
-                proyectoToUpdated.get().setInventarioHardware(proyecto.getInventarioHardware());
-                proyectoToUpdated.get().setNodos(proyecto.getNodos());
-                proyectoToUpdated.get().setAtpFisico(proyecto.getAtpFisico());
-                proyectoToUpdated.get().setAtpFisicoFirmado(proyecto.getAtpFisicoFirmado());
-                proyectoToUpdated.get().setAtpLogico(proyecto.getAtpLogico());
-                proyectoToUpdated.get().setAtpLogicoFirmado(proyecto.getAtpLogicoFirmado());
-                proyectoToUpdated.get().setReporteTransferenciaOperativa(proyecto.getReporteTransferenciaOperativa());
-                proyectoToUpdated.get().setCartaResponsivaIaaS(proyecto.getCartaResponsivaIaaS());
-                proyectoToUpdated.get().setCartaResponsivaPlataforma(proyecto.getCartaResponsivaPlataforma());
-                proyectoToUpdated.get().setCartaResponsivaStorage(proyecto.getCartaResponsivaStorage());
-                proyectoToUpdated.get().setCartaResponsivaHa(proyecto.getCartaResponsivaHa());
-                proyectoToUpdated.get().setCartaResponsivaGsoc(proyecto.getCartaResponsivaGsoc());
-
-                Proyecto proyectoUpdated = this.proyectoRepository.save(proyectoToUpdated.get());
-
-                // Actualizacion en la base de datos
-                if (proyectoUpdated != null) {
-                    proyectos.add(proyectoUpdated);
-                    response.getProyectoResponse().setProyectos(proyectos);
-                    response.setMetadata("Respuesta exitosa", "00", "¡Proyecto actualizado exitosamente!");
+            // Helper local para subir los archivos
+            BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
+                if (mpf != null && !mpf.isEmpty()) {
+                    try {
+                        return uploadFileService.copiarArchivoEnSubCarpeta(
+                                proyectoGuardado.getNombre(), mpf);
+                    } catch (IOException e) {
+                        logger.error("Error al copiar {} en subcarpeta {}: {}",
+                                mpf.getOriginalFilename(),
+                                proyectoGuardado.getNombre(),
+                                e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
                 } else {
-                    response.setMetadata("Respuesta fallida", "-1", "¡Error en la solicitud de la actualizacion!");
-                    return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.BAD_REQUEST);
+                    // se podra usar el valor antiguamente guardado, si se prefiere:
+                    return defecto != null ? defecto : "Pendiente";
                 }
-            } else {
-                response.setMetadata("Respuesta fallida", "-1", "¡Proyecto no encontrado!");
-                return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.NOT_FOUND);
-            }
+            };
 
-        } catch (Exception ex) {
-            ex.getStackTrace();
-            response.setMetadata("Respuesta fallida", "-1", "¡Error al actualizar el proyecto!");
-            return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            // Actualizamos los archivos
+            guardarODefault.apply(fileF60, proyectoGuardado.getF60());
+            guardarODefault.apply(fileLld, proyectoGuardado.getLld());
+            guardarODefault.apply(fileHld, proyectoGuardado.getHld());
+            guardarODefault.apply(fileLayout, proyectoGuardado.getLayout());
+            guardarODefault.apply(fileSla, proyectoGuardado.getSla());
+            guardarODefault.apply(fileReporteFotografico, proyectoGuardado.getReporteFotografico());
+            guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoGuardado.getAsignacionFuerzaEspacio());
+            guardarODefault.apply(fileInventarioHardware, proyectoGuardado.getInventarioHardware());
+            guardarODefault.apply(fileAtpFisico, proyectoGuardado.getAtpFisico());
+            guardarODefault.apply(fileAtpFisicoFirmado, proyectoGuardado.getAtpFisicoFirmado());
+            guardarODefault.apply(fileAtpLogico, proyectoGuardado.getAtpLogico());
+            guardarODefault.apply(fileAtpLogicoFirmado, proyectoGuardado.getAtpLogicoFirmado());
+            guardarODefault.apply(fileReporteTransferenciaOperativa, proyectoGuardado.getReporteTransferenciaOperativa());
+            guardarODefault.apply(fileCartaResponsivaIaaS, proyectoGuardado.getCartaResponsivaIaaS());
+            guardarODefault.apply(fileCartaResponsivaPlataforma, proyectoGuardado.getCartaResponsivaPlataforma());
+            guardarODefault.apply(fileCartaResponsivaStorage, proyectoGuardado.getCartaResponsivaStorage());
+            guardarODefault.apply(fileCartaResponsivaHa, proyectoGuardado.getCartaResponsivaHa());
+            guardarODefault.apply(fileCartaResponsivaGsoc, proyectoGuardado.getCartaResponsivaGsoc());
+
+            // Persistir en la base de datos
+            proyectoRepository.save(proyectoGuardado);
+
+            // Se arma el response
+            response.getMetaList().add(Map.of("code", "00", "message", "¡Se ha actualizado el proyecto exitosamente"));
+            response.getProyectoResponse().setProyectos(List.of(proyectoGuardado));
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            logger.error("¡Error al actualizar el proyecto: ", e);
+            response.getMetaList().add(Map.of("code", "-1", "message", "¡Error al actualizar el proyecto"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
-        return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.OK);
     }
 
     /**
