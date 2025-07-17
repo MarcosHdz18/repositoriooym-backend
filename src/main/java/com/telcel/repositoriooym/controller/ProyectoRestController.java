@@ -161,43 +161,6 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            // Helper local para evitar repetir el patrón
-            BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
-                if (mpf != null && !mpf.isEmpty()) {
-                    try {
-                        // pasa primero la carpeta (nombre del proyecto) y luego el archivo
-                        return uploadFileService.copiarArchivoEnSubCarpeta(proyecto.getNombre(), mpf);
-                    } catch (IOException e) {
-                        // loggea el error
-                        if (logger.isErrorEnabled()) {
-                            logger.error("Error al copiar {} en subcarpeta {}: {}", mpf.getOriginalFilename(), proyecto.getNombre(), e.getMessage());
-                        }
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    return defecto;
-                }
-            };
-
-            proyecto.setF60(guardarODefault.apply(fileF60,"Pendiente") );
-            proyecto.setLld(guardarODefault.apply(fileLld,"Pendiente") );
-            proyecto.setHld(guardarODefault.apply(fileHld,"Pendiente") );
-            proyecto.setLayout(guardarODefault.apply(fileLayout,"Pendiente") );
-            proyecto.setSla(guardarODefault.apply(fileSla,"Pendiente") );
-            proyecto.setReporteFotografico(guardarODefault.apply(fileReporteFotografico,"Pendiente"));
-            proyecto.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio,"Pendiente"));
-            proyecto.setInventarioHardware(guardarODefault.apply(fileInventarioHardware,"Pendiente"));
-            proyecto.setAtpFisico(guardarODefault.apply(fileAtpFisico,"Pendiente"));
-            proyecto.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado,"Pendiente"));
-            proyecto.setAtpLogico(guardarODefault.apply(fileAtpLogico,"Pendiente"));
-            proyecto.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado,"Pendiente"));
-            proyecto.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa,"Pendiente"));
-            proyecto.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS,"Pendiente"));
-            proyecto.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma,"Pendiente"));
-            proyecto.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage,"Pendiente"));
-            proyecto.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa,"Pendiente"));
-            proyecto.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc,"Pendiente"));
-
             this.proyectoService.save(proyecto, responsableId, fechaLiberacion , fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
                     fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
