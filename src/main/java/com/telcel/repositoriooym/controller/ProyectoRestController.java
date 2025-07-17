@@ -210,7 +210,7 @@ public class ProyectoRestController {
         }catch (Exception e) {
             logger.error("Error al persistir el proyecto metodo save", e);
             meta.put("code", "-1");
-            meta.put("data", "Error al crear el proyecto");
+            meta.put("data", "¡Error al crear el proyecto!");
             return ResponseEntity.ok(respuesta);
         }
 
@@ -296,7 +296,7 @@ public class ProyectoRestController {
         } catch (Exception e) {
             logger.error("Error al persistir el proyecto metodo update", e);
             meta.put("code", "-1");
-            meta.put("data", "Error al actualizar el proyecto");
+            meta.put("data", "¡Error al actualizar el proyecto!");
             return ResponseEntity.ok(response);
         }
     }
