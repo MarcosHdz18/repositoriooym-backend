@@ -312,33 +312,51 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyecto.setResponsableProyecto(responsable.get());
             proyecto.setNombre(proyecto.getNombre().toUpperCase());
 
-            Proyecto guardado = this.proyectoRepository.save(proyecto);
+            Proyecto persistido = this.proyectoRepository.save(proyecto);
 
             // Elegimos como nombre de carpeta el nombre del proyecto (sanitizado por el servicio)
-            String carpeta = guardado.getNombre();
+            String carpeta = persistido.getNombre();
 
-            // Copiamos cada archivo dentro de documentacion_proyectos/carpeta/
-            guardado.setF60(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileF60));
-            guardado.setLld(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileLld));
-            guardado.setHld(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileHld));
-            guardado.setLayout(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileLayout));
-            guardado.setSla(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileSla));
-            guardado.setReporteFotografico(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileReporteFotografico));
-            guardado.setAsignacionFuerzaEspacio(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileAsignacionFuerzaEspacio));
-            guardado.setInventarioHardware(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileInventarioHardware));
-            guardado.setAtpFisico(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileAtpFisico));
-            guardado.setAtpFisicoFirmado(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileAtpFisicoFirmado));
-            guardado.setAtpLogico(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileAtpLogico));
-            guardado.setAtpLogicoFirmado(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileAtpLogicoFirmado));
-            guardado.setReporteTransferenciaOperativa(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileReporteTransferenciaOperativa));
-            guardado.setCartaResponsivaIaaS(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileCartaResponsivaIaaS));
-            guardado.setCartaResponsivaPlataforma(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileCartaResponsivaPlataforma));
-            guardado.setCartaResponsivaStorage(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileCartaResponsivaStorage));
-            guardado.setCartaResponsivaHa(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileCartaResponsivaHa));
-            guardado.setCartaResponsivaGsoc(this.uploadFileService.copiarArchivoEnSubCarpeta(carpeta, fileCartaResponsivaGsoc));
+            // Helper local para subir los archivos
+            BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
+                if (mpf != null && !mpf.isEmpty()) {
+                    try {
+                        return uploadFileService.copiarArchivoEnSubCarpeta(persistido.getNombre(), mpf);
+                    } catch (IOException e) {
+                        logger.error("Error al copiar {} en subcarpeta {}: {}",
+                                mpf.getOriginalFilename(),
+                                persistido.getNombre(),
+                                e.getMessage(), e);
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // se podra usar el valor antiguamente guardado, si se prefiere:
+                    return defecto != null ? defecto : "Pendiente";
+                }
+            };
+
+            // Seteamos el nombre del archivo o la palabra pendiente en la base de datos
+            persistido.setF60(guardarODefault.apply(fileF60, proyecto.getF60()));
+            persistido.setLld(guardarODefault.apply(fileLld, proyecto.getLld()));
+            persistido.setHld(guardarODefault.apply(fileHld, proyecto.getHld()));
+            persistido.setLayout(guardarODefault.apply(fileLayout, proyecto.getLayout()));
+            persistido.setSla(guardarODefault.apply(fileSla, proyecto.getSla()));
+            persistido.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyecto.getReporteFotografico()));
+            persistido.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyecto.getAsignacionFuerzaEspacio()));
+            persistido.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyecto.getInventarioHardware()));
+            persistido.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyecto.getAtpFisico()));
+            persistido.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyecto.getAtpFisicoFirmado()));
+            persistido.setAtpLogico(guardarODefault.apply(fileAtpLogico, proyecto.getAtpLogico()));
+            persistido.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado, proyecto.getAtpLogicoFirmado()));
+            persistido.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa, proyecto.getReporteTransferenciaOperativa()));
+            persistido.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS, proyecto.getCartaResponsivaIaaS()));
+            persistido.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma, proyecto.getCartaResponsivaPlataforma()));
+            persistido.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyecto.getCartaResponsivaStorage()));
+            persistido.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyecto.getCartaResponsivaHa()));
+            persistido.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyecto.getCartaResponsivaGsoc()));
 
             // Actualiza la entidad con las rutas finales
-            Proyecto actualizado = this.proyectoRepository.save(guardado);
+            Proyecto actualizado = this.proyectoRepository.save(persistido);
 
             if (actualizado != null) {
                 proyectos.add(actualizado);
