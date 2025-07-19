@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar todo lo que se genere en la carpeta de documentacion_proyectos #
+/documentacion_proyectos/
+

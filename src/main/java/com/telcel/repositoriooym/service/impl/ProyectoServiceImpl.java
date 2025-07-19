@@ -398,24 +398,32 @@ public class ProyectoServiceImpl implements IProyectoService {
 
         try {
             // Recuperamos el proyecto existente o lanzamos excepcion si no existe en la base de datos
-            Proyecto proyectoGuardado = proyectoRepository.findById(proyecto.getIdProyecto()).orElseThrow(() ->
+            Proyecto proyectoActualizado = proyectoRepository.findById(proyecto.getIdProyecto()).orElseThrow(() ->
                     new EntityNotFoundException("Proyecto con id " + proyecto.getIdProyecto() + " no existe"));
 
             // Actualizamos los campos basicos (Strings)
-            proyectoGuardado.setNombre(proyecto.getNombre());
-            proyectoGuardado.setFechaLiberacion(fechaLiberacion);
-            proyectoGuardado.setNodos(proyecto.getNodos());
+            proyectoActualizado.setNombre(proyecto.getNombre());
+            proyectoActualizado.setFechaLiberacion(fechaLiberacion);
+            proyectoActualizado.setNodos(proyecto.getNodos());
+            Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
+
+            if (!responsable.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            proyectoActualizado.setResponsableProyecto(responsable.get());
 
             // Helper local para subir los archivos
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
                 if (mpf != null && !mpf.isEmpty()) {
                     try {
                         return uploadFileService.copiarArchivoEnSubCarpeta(
-                                proyectoGuardado.getNombre(), mpf);
+                                proyectoActualizado.getNombre(), mpf);
                     } catch (IOException e) {
                         logger.error("Error al copiar {} en subcarpeta {}: {}",
                                 mpf.getOriginalFilename(),
-                                proyectoGuardado.getNombre(),
+                                proyectoActualizado.getNombre(),
                                 e.getMessage(), e);
                         throw new RuntimeException(e);
                     }
@@ -426,31 +434,31 @@ public class ProyectoServiceImpl implements IProyectoService {
             };
 
             // Actualizamos los archivos
-            guardarODefault.apply(fileF60, proyectoGuardado.getF60());
-            guardarODefault.apply(fileLld, proyectoGuardado.getLld());
-            guardarODefault.apply(fileHld, proyectoGuardado.getHld());
-            guardarODefault.apply(fileLayout, proyectoGuardado.getLayout());
-            guardarODefault.apply(fileSla, proyectoGuardado.getSla());
-            guardarODefault.apply(fileReporteFotografico, proyectoGuardado.getReporteFotografico());
-            guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoGuardado.getAsignacionFuerzaEspacio());
-            guardarODefault.apply(fileInventarioHardware, proyectoGuardado.getInventarioHardware());
-            guardarODefault.apply(fileAtpFisico, proyectoGuardado.getAtpFisico());
-            guardarODefault.apply(fileAtpFisicoFirmado, proyectoGuardado.getAtpFisicoFirmado());
-            guardarODefault.apply(fileAtpLogico, proyectoGuardado.getAtpLogico());
-            guardarODefault.apply(fileAtpLogicoFirmado, proyectoGuardado.getAtpLogicoFirmado());
-            guardarODefault.apply(fileReporteTransferenciaOperativa, proyectoGuardado.getReporteTransferenciaOperativa());
-            guardarODefault.apply(fileCartaResponsivaIaaS, proyectoGuardado.getCartaResponsivaIaaS());
-            guardarODefault.apply(fileCartaResponsivaPlataforma, proyectoGuardado.getCartaResponsivaPlataforma());
-            guardarODefault.apply(fileCartaResponsivaStorage, proyectoGuardado.getCartaResponsivaStorage());
-            guardarODefault.apply(fileCartaResponsivaHa, proyectoGuardado.getCartaResponsivaHa());
-            guardarODefault.apply(fileCartaResponsivaGsoc, proyectoGuardado.getCartaResponsivaGsoc());
+            proyectoActualizado.setF60(guardarODefault.apply(fileF60, proyectoActualizado.getF60()));
+            proyectoActualizado.setLld(guardarODefault.apply(fileLld, proyectoActualizado.getLld()));
+            proyectoActualizado.setHld(guardarODefault.apply(fileHld, proyectoActualizado.getHld()));
+            proyectoActualizado.setLayout(guardarODefault.apply(fileLayout, proyectoActualizado.getLayout()));
+            proyectoActualizado.setSla(guardarODefault.apply(fileSla, proyectoActualizado.getSla()));
+            proyectoActualizado.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyectoActualizado.getReporteFotografico()));
+            proyectoActualizado.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoActualizado.getAsignacionFuerzaEspacio()));
+            proyectoActualizado.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyectoActualizado.getInventarioHardware()));
+            proyectoActualizado.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyectoActualizado.getAtpFisico()));
+            proyectoActualizado.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyectoActualizado.getAtpFisicoFirmado()));
+            proyectoActualizado.setAtpLogico(guardarODefault.apply(fileAtpLogico, proyectoActualizado.getAtpLogico()));
+            proyectoActualizado.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado, proyectoActualizado.getAtpLogicoFirmado()));
+            proyectoActualizado.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa, proyectoActualizado.getReporteTransferenciaOperativa()));
+            proyectoActualizado.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS, proyectoActualizado.getCartaResponsivaIaaS()));
+            proyectoActualizado.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma, proyectoActualizado.getCartaResponsivaPlataforma()));
+            proyectoActualizado.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyectoActualizado.getCartaResponsivaStorage()));
+            proyectoActualizado.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyectoActualizado.getCartaResponsivaHa()));
+            proyectoActualizado.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyectoActualizado.getCartaResponsivaGsoc()));
 
             // Persistir en la base de datos
-            proyectoRepository.save(proyectoGuardado);
+            proyectoRepository.save(proyectoActualizado);
 
             // Se arma el response
             response.getMetaList().add(Map.of("code", "00", "message", "¡Se ha actualizado el proyecto exitosamente"));
-            response.getProyectoResponse().setProyectos(List.of(proyectoGuardado));
+            response.getProyectoResponse().setProyectos(List.of(proyectoActualizado));
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
