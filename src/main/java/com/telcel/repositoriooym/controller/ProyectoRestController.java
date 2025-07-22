@@ -322,10 +322,10 @@ public class ProyectoRestController {
      * @return ResponseEntity de tipo ProyectoResponseRest
      */
     @DeleteMapping("/proyectos/{idProyecto}")
-    public ResponseEntity<ProyectoResponseRest> deleteProyectoById(@PathVariable Long idProyecto) {
+    public ResponseEntity<Void> deleteProyectoById(@PathVariable Long idProyecto) {
 
-        ResponseEntity<ProyectoResponseRest> response = this.proyectoService.delete(idProyecto);
+        proyectoService.deleteProyecto(idProyecto);
 
-        return response;
+        return ResponseEntity.noContent().build();
     }
 }

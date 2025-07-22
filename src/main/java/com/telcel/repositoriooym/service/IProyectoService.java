@@ -62,7 +62,6 @@ public interface IProyectoService {
     /**
      * Metodo que realiza el borrado del proyecto por su identificador unico
      * @param idProyecto identificador unico del proyecto
-     * @return ResponseEntity del objeto ProyectoResponseRest
      */
-    public ResponseEntity<ProyectoResponseRest> delete(Long idProyecto);
+    void deleteProyecto(Long idProyecto);
 }

@@ -10,16 +10,24 @@ import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
 import com.telcel.repositoriooym.service.ISubirArchivoService;
 import jakarta.persistence.EntityNotFoundException;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +58,12 @@ public class ProyectoServiceImpl implements IProyectoService {
 
     @Autowired
     private ISubirArchivoService uploadFileService;
+
+    /**
+     * Carpeta donde se almacenaran los archivos a subir
+     */
+    @Value("${folder.location}")
+    private String documentacionProyectos;
 
     /**
      * Metodo que lista todos los objetos de tipo Proyecto obtenidos de la base de datos
@@ -475,26 +489,36 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> delete(Long idProyecto) {
+    public void deleteProyecto(Long idProyecto) {
 
-        ProyectoResponseRest response = new ProyectoResponseRest();
-        Optional<Proyecto> proyecto = this.proyectoRepository.findById(idProyecto);
+        // Obtengo el proyecto o se lanza excepcion si no existe
+        Proyecto proyecto = proyectoRepository.findById(idProyecto).orElseThrow(() ->
+                new RuntimeException("No existe el proyecto con id " + idProyecto));
+
+        // Sanitizamos la carpeta con el nombre real en disco con _
+        String carpeta = proyecto.getNombre().trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
+
+        // Borramos la carpeta de archivos
+        Path proyectoCarpeta = Paths.get(documentacionProyectos, carpeta);
+        logger.info("-> Intentando borrar carpeta de proyecto: {}" , proyectoCarpeta.toAbsolutePath());
 
         try {
-            if (proyecto.isPresent()) {
-                // Eliminamos el proyecto por su identificador unico
-                this.proyectoRepository.deleteById(idProyecto);
-                response.setMetadata("Respuesta exitosa", "00", "¡Proyecto eliminado exitosamente!");
+            if (Files.exists(proyectoCarpeta)) {
+                FileUtils.deleteDirectory(proyectoCarpeta.toFile());
+                logger.info("   ✔ Carpeta borrada correctamente: {}", proyectoCarpeta);
             } else {
-                response.setMetadata("Respues fallida", "-1", "¡Proyecto no encontrado!");
-                return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.NOT_FOUND);
+                logger.warn("   ⚠ La carpeta no existe, salteando borrado: {}", proyectoCarpeta);
             }
-        } catch (Exception ex) {
-            ex.getStackTrace();
-            response.setMetadata("Respues fallida", "-1", "¡Error al intentar eliminar el proyecto por su id!");
-            return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IOException e) {
+            logger.error("   ✖ Error borrando archivos del proyecto {}: {}", proyecto.getNombre(), e.getMessage(), e);
+            throw new RuntimeException("Error borrando archivos del proyecto " + proyecto.getNombre(), e);
         }
 
-        return new ResponseEntity<ProyectoResponseRest>(response, HttpStatus.OK);
+        try {
+            // Borrado de la entidad en la base de datos
+            proyectoRepository.deleteById(idProyecto);
+        } catch (DataIntegrityViolationException ex) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "No se puede eliminar el departamento porque hay responsables asociados");
+        }
     }
 }

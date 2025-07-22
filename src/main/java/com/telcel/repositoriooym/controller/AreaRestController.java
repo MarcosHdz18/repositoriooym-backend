@@ -74,7 +74,8 @@ public class AreaRestController {
      */
     @DeleteMapping("/areas/{idArea}")
     public ResponseEntity<AreaResponseRest> deleteAreaById(@PathVariable Long idArea) {
-        return this.areaService.deleteById(idArea);
+        this.areaService.deleteById(idArea);
+        return ResponseEntity.noContent().build(); // Estatus 204 si salio OK
     }
 
     /**
