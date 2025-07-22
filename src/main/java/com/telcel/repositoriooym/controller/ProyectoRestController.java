@@ -4,8 +4,12 @@ import com.telcel.repositoriooym.entity.Proyecto;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
 import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
+import com.telcel.repositoriooym.response.ResponsableResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
 import com.telcel.repositoriooym.service.ISubirArchivoService;
+import com.telcel.repositoriooym.utils.ProyectoExcelExporter;
+import com.telcel.repositoriooym.utils.ResponsableExcelExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -28,6 +32,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
@@ -327,5 +332,25 @@ public class ProyectoRestController {
         proyectoService.deleteProyecto(idProyecto);
 
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Metodo que realizara la exportacion a excel
+     * @param response Objeto de tipo HttpServletResponse
+     * @throws IOException Excepcion que se lanzara cuando exista algun error de exportacion
+     */
+    @GetMapping("/proyectos/export/excel")
+    public void exportDataExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=datos_departamentos";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<ProyectoResponseRest> proyectos = this.proyectoService.findAll();
+
+        ProyectoExcelExporter fileExcelExporter = new ProyectoExcelExporter(Objects.requireNonNull(proyectos.getBody()).getProyectoResponse().getProyectos());
+        fileExcelExporter.exportData(response);
     }
 }

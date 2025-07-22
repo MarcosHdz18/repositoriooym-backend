@@ -1,13 +1,18 @@
 package com.telcel.repositoriooym.controller;
 
 import com.telcel.repositoriooym.entity.Responsable;
+import com.telcel.repositoriooym.response.AreaResponseRest;
 import com.telcel.repositoriooym.response.ResponsableResponseRest;
 import com.telcel.repositoriooym.service.IResponsableService;
+import com.telcel.repositoriooym.utils.AreaExcelExporter;
+import com.telcel.repositoriooym.utils.ResponsableExcelExporter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * @author marcos.hernandez
@@ -106,5 +111,25 @@ public class ResponsableRestController {
     @DeleteMapping("/responsables/{idResponsable}")
     public ResponseEntity<ResponsableResponseRest> deleteResponsable(@PathVariable Long idResponsable) {
         return this.responsableService.deleteById(idResponsable);
+    }
+
+    /**
+     * Metodo que realizara la exportacion a excel
+     * @param response Objeto de tipo HttpServletResponse
+     * @throws IOException Excepcion que se lanzara cuando exista algun error de exportacion
+     */
+    @GetMapping("/responsables/export/excel")
+    public void exportDataExcel(HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/octet-stream");
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=datos_departamentos";
+        response.setHeader(headerKey, headerValue);
+
+        ResponseEntity<ResponsableResponseRest> responsables = this.responsableService.findAll();
+
+        ResponsableExcelExporter fileExcelExporter = new ResponsableExcelExporter(Objects.requireNonNull(responsables.getBody()).getResponsableResponse().getResponsables());
+        fileExcelExporter.exportData(response);
     }
 }
