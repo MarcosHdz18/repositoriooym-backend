@@ -16,7 +16,7 @@ import java.util.Objects;
  * @author marcos.hernandez
  *
  */
-@CrossOrigin(origins = {"http://localhost:4200"})
+@CrossOrigin(origins = {"http://localhost:8083"})
 @RestController
 @RequestMapping("/api/v1")
 public class AreaRestController {

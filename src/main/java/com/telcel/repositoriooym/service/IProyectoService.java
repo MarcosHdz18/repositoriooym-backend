@@ -43,7 +43,8 @@ public interface IProyectoService {
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                      MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc);
+                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
+                                                     MultipartFile fileOtros);
 
     /**
      * Metodo que permite actualizar un objeto de tipo Proyecto en la base de datos
@@ -57,7 +58,8 @@ public interface IProyectoService {
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                        MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc);
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
+                                                       MultipartFile fileOtros);
 
     /**
      * Metodo que realiza el borrado del proyecto por su identificador unico

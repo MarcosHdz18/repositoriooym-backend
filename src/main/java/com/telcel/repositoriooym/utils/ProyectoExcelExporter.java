@@ -63,6 +63,25 @@ public class ProyectoExcelExporter {
         createCell(row, 3, "Año", style);
         createCell(row, 4, "Nodos", style);
         createCell(row, 5, "Responsable", style);
+        createCell(row, 6, "Archivo F60", style);
+        createCell(row, 7, "Archivo LLD", style);
+        createCell(row, 8, "Archivo HLD", style);
+        createCell(row, 9, "Archivo Layout", style);
+        createCell(row, 10, "Archivo SLA", style);
+        createCell(row, 11, "Archivo RTO", style);
+        createCell(row, 12, "Archivo ATP Físico", style);
+        createCell(row, 13, "Archivo ATP Físico Firmado", style);
+        createCell(row, 14, "Archivo ATP Lógico", style);
+        createCell(row, 15, "Archivo ATP Lógico Firmado", style);
+        createCell(row, 16, "Archivo Reporte Fotográfico", style);
+        createCell(row, 17, "Archivo Asignación Fuerza-Espacio", style);
+        createCell(row, 18, "Archivo Inventario Hardware", style);
+        createCell(row, 19, "Archivo Carta Responsiva IaaS", style);
+        createCell(row, 20, "Archivo Carta Responsiva Plataforma", style);
+        createCell(row, 21, "Archivo Carta Responsiva Storage", style);
+        createCell(row, 22, "Archivo Carta Responsiva HA", style);
+        createCell(row, 23, "Archivo Carta Responsiva GSOC", style);
+        createCell(row, 24, "Archivo Otros", style);
     }
 
     /**
@@ -107,6 +126,25 @@ public class ProyectoExcelExporter {
             createCell(row, columnCount++, proyecto.getAnio(), style);
             createCell(row, columnCount++, proyecto.getNodos(), style);
             createCell(row, columnCount++, proyecto.getResponsableProyecto().getNombre(), style);
+            createCell(row, columnCount++, proyecto.getF60(), style);
+            createCell(row, columnCount++, proyecto.getLld(), style);
+            createCell(row, columnCount++, proyecto.getHld(), style);
+            createCell(row, columnCount++, proyecto.getLayout(), style);
+            createCell(row, columnCount++, proyecto.getSla(), style);
+            createCell(row, columnCount++, proyecto.getReporteTransferenciaOperativa(), style);
+            createCell(row, columnCount++, proyecto.getAtpFisico(), style);
+            createCell(row, columnCount++, proyecto.getAtpFisicoFirmado(), style);
+            createCell(row, columnCount++, proyecto.getAtpLogico(), style);
+            createCell(row, columnCount++, proyecto.getAtpLogicoFirmado(), style);
+            createCell(row, columnCount++, proyecto.getReporteFotografico(), style);
+            createCell(row, columnCount++, proyecto.getAsignacionFuerzaEspacio(), style);
+            createCell(row, columnCount++, proyecto.getInventarioHardware(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaIaaS(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaPlataforma(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaStorage(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaHa(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaGsoc(), style);
+            createCell(row, columnCount++, proyecto.getOtros(), style);
         }
     }
 

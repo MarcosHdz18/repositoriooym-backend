@@ -39,7 +39,7 @@ import java.util.function.BiFunction;
  * @author marcos.hernandez
  */
 
-@CrossOrigin(origins = "http://localhost:4200", exposedHeaders = "Content-Disposition")
+@CrossOrigin(origins = "http://localhost:8083", exposedHeaders = "Content-Disposition")
 @RestController
 @RequestMapping("/api/v1")
 public class ProyectoRestController {
@@ -145,6 +145,7 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
             @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
             @RequestParam("nombre") String nombre,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
             @RequestParam("nodos") String nodos,
@@ -169,7 +170,7 @@ public class ProyectoRestController {
             this.proyectoService.save(proyecto, responsableId, fechaLiberacion , fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
                     fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
-                    fileCartaResponsivaGsoc);
+                    fileCartaResponsivaGsoc, fileOtros);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -232,6 +233,7 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
             @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
             @RequestParam("nombre") String nombre,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
             @RequestParam("nodos") String nodos,
@@ -255,7 +257,7 @@ public class ProyectoRestController {
             this.proyectoService.update(proyecto, responsableId, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
                     fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
-                    fileCartaResponsivaGsoc);
+                    fileCartaResponsivaGsoc,fileOtros);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -304,6 +306,7 @@ public class ProyectoRestController {
             case "cartaresponsivastorage": filename = proyecto.getCartaResponsivaStorage(); break;
             case "cartaresponsivaha": filename = proyecto.getCartaResponsivaHa(); break;
             case "cartaresponsivagsoc": filename = proyecto.getCartaResponsivaGsoc(); break;
+            case "otros": filename = proyecto.getOtros(); break;
             default:
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST, "Documento no válido: " + documento);

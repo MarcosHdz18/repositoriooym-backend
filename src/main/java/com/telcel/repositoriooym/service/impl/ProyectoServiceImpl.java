@@ -309,7 +309,8 @@ public class ProyectoServiceImpl implements IProyectoService {
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                      MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc) {
+                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
+                                                     MultipartFile fileOtros) {
 
         ProyectoResponseRest response = new ProyectoResponseRest();
         List<Proyecto> proyectos = new ArrayList<>();
@@ -368,6 +369,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             persistido.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyecto.getCartaResponsivaStorage()));
             persistido.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyecto.getCartaResponsivaHa()));
             persistido.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyecto.getCartaResponsivaGsoc()));
+            persistido.setOtros(guardarODefault.apply(fileOtros, proyecto.getOtros()));
 
             // Actualiza la entidad con las rutas finales
             Proyecto actualizado = this.proyectoRepository.save(persistido);
@@ -403,7 +405,8 @@ public class ProyectoServiceImpl implements IProyectoService {
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                        MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc) {
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
+                                                       MultipartFile fileOtros) {
 
         ProyectoResponseRest response = new ProyectoResponseRest();
 
@@ -466,6 +469,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyectoActualizado.getCartaResponsivaStorage()));
             proyectoActualizado.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyectoActualizado.getCartaResponsivaHa()));
             proyectoActualizado.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyectoActualizado.getCartaResponsivaGsoc()));
+            proyectoActualizado.setOtros(guardarODefault.apply(fileOtros, proyecto.getOtros()));
 
             // Persistir en la base de datos
             proyectoRepository.save(proyectoActualizado);

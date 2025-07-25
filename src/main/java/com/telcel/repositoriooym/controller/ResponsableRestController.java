@@ -19,7 +19,7 @@ import java.util.Objects;
  *
  */
 
-@CrossOrigin(origins = { "http://localhost:4200" })
+@CrossOrigin(origins = { "http://localhost:8083" })
 @RestController
 @RequestMapping("/api/v1")
 public class ResponsableRestController {

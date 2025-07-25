@@ -180,6 +180,12 @@ public class Proyecto implements Serializable {
     private String cartaResponsivaGsoc;
 
     /**
+     * Ruta del documento otro
+     */
+    @Column(name = "otros", length = 512)
+    private String otros;
+
+    /**
      * Responsable de recepcion del proyecto
      */
     @ManyToOne(fetch = FetchType.LAZY)
