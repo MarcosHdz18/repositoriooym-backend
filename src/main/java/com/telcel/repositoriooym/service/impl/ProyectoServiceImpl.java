@@ -3,8 +3,10 @@ package com.telcel.repositoriooym.service.impl;
 import com.telcel.repositoriooym.controller.ProyectoRestController;
 import com.telcel.repositoriooym.entity.Proyecto;
 import com.telcel.repositoriooym.entity.Responsable;
+import com.telcel.repositoriooym.entity.TipoProyecto;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
 import com.telcel.repositoriooym.repository.IResponsableRepository;
+import com.telcel.repositoriooym.repository.ITipoProyectoRepository;
 import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
@@ -55,6 +57,12 @@ public class ProyectoServiceImpl implements IProyectoService {
 
     @Autowired
     private IResponsableRepository responsableRepository;
+
+    /**
+     * Objeto de tipo ITipoProyectoRepository con el CRUD respectivo
+     */
+    @Autowired
+    private ITipoProyectoRepository tipoProyectoRepository;
 
     @Autowired
     private ISubirArchivoService uploadFileService;
@@ -303,7 +311,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
    @Transactional
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId,String fechaLiberacion, MultipartFile fileF60,
                                                      MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -318,6 +326,7 @@ public class ProyectoServiceImpl implements IProyectoService {
         try {
             // Persistimos sólo datos básicos del proyecto
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
+            Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
@@ -325,6 +334,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             }
 
             proyecto.setResponsableProyecto(responsable.get());
+            proyecto.setTipoProyecto(tipoProyecto.get());
             proyecto.setNombre(proyecto.getNombre().toUpperCase());
 
             Proyecto persistido = this.proyectoRepository.save(proyecto);
@@ -399,7 +409,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId,String fechaLiberacion, MultipartFile fileF60,
                                                        MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -423,13 +433,20 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setFechaLiberacion(fechaLiberacion);
             proyectoActualizado.setNodos(proyecto.getNodos());
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
+            Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            if (!tipoProyecto.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             proyectoActualizado.setResponsableProyecto(responsable.get());
+            proyectoActualizado.setTipoProyecto(tipoProyecto.get());
 
             // Helper local para subir los archivos
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {

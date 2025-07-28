@@ -37,7 +37,7 @@ public interface IProyectoService {
      * @param responsableId identificador unico para persistir el responsable del proyecto
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, String fechaLiberacion, MultipartFile fileF60,
                                                      MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -52,7 +52,7 @@ public interface IProyectoService {
      * @param responsableId objeto de tipo ResponsableProyecto que se actualizara mediante su identificador unico
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, String fechaLiberacion, MultipartFile fileF60,
                                                        MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
