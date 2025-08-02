@@ -200,4 +200,18 @@ public class Proyecto implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "id_tipo_proyecto", nullable = false)
     private TipoProyecto tipoProyecto;
+
+    /**
+     * Region donde se encuentra el proyecto
+     */
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "region_id")
+    private Region region;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "sitio_id")
+    private Sitio sitio;
 }

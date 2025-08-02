@@ -1,0 +1,131 @@
+package com.telcel.repositoriooym.utils;
+
+import com.telcel.repositoriooym.entity.Sitio;
+import jakarta.servlet.ServletOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.IOException;
+import java.util.List;
+
+public class SitioExcelExporter {
+    /**
+     * Objeto para libro de Excel
+     */
+    private XSSFWorkbook workbook;
+
+    /**
+     * Objeto para hoja de Excel
+     */
+    private XSSFSheet sheet;
+
+    /**
+     * Arreglo de objetos a iterar
+     */
+    private List<Sitio> sitioList;
+
+    /**
+     * Constructor sobrecargado con la lista a iterar y se inicializa el objeto workbook
+     *
+     * @param sitioList lista de objetos de tipo Area
+     */
+    public SitioExcelExporter(List<Sitio> sitioList) {
+        this.workbook = new XSSFWorkbook();
+        this.sitioList = sitioList;
+    }
+
+    /**
+     * Metodo que escribe en la cabecera del archivo de Excel
+     */
+    private void writeHeaderLine() {
+        sheet = workbook.createSheet("Sitios");
+        Row row = sheet.createRow(0);
+        CellStyle style = workbook.createCellStyle();
+
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(16);
+
+        style.setFont(font);
+
+        // Creacion de celdas en el libro
+        createCell(row, 0, "ID", style);
+        createCell(row, 1, "Central", style);
+        createCell(row, 2, "Region", style);
+        createCell(row, 3, "3Char", style);
+        createCell(row, 4, "Direccion", style);
+        createCell(row, 5, "Contacto", style);
+        createCell(row, 6, "Contacto telefono", style);
+        createCell(row, 7, "Contacto correo", style);
+    }
+
+    /**
+     * Metodo utilizado para crear la celda en el libro
+     * @param row fila del libro
+     * @param columnCount conteo de columnas
+     * @param value valor de la celda
+     * @param style estilo de la celda
+     */
+    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+
+        if(value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if(value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        } else {
+            cell.setCellValue((String) value);
+        }
+
+        cell.setCellStyle(style);
+    }
+
+    /**
+     * Metodo que sera utilizado para integrar los datos en el libro de excel
+     */
+    private void writeDataLines() {
+        int rowCount = 1;
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(14);
+        style.setFont(font);
+
+        // Iteracion de la lista de objetos de tipo Category
+        for (Sitio sitio : sitioList) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+            createCell(row, columnCount++, String.valueOf(sitio.getIdSitio()), style);
+            createCell(row, columnCount++, sitio.getNombre(), style);
+            createCell(row, columnCount++, sitio.getRegion().getNombre(), style);
+            createCell(row, columnCount++, sitio.getTreeChar(), style);
+            createCell(row, columnCount++, sitio.getDireccion(), style);
+            createCell(row, columnCount++, sitio.getNombreContacto(), style);
+            createCell(row, columnCount++, sitio.getTelefonoContacto(), style);
+            createCell(row, columnCount++, sitio.getCorreoContacto(), style);
+        }
+    }
+
+    /**
+     * Metodo que realizara la exportacion de la data al libro de excel
+     * @param response objeto de tipo HttpServletResponse
+     * @throws IOException Excepcion que se lanzara cuando no pueda realizar la exportacion
+     */
+    public void exportData(HttpServletResponse response) throws IOException {
+        // Escribe la cabecera del archivo
+        writeHeaderLine();
+        // Escribe la data en el archivo
+        writeDataLines();
+
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        workbook.write(servletOutputStream);
+        workbook.close();
+
+        servletOutputStream.close();
+    }
+}

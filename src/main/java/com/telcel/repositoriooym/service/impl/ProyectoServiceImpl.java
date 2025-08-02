@@ -1,12 +1,8 @@
 package com.telcel.repositoriooym.service.impl;
 
 import com.telcel.repositoriooym.controller.ProyectoRestController;
-import com.telcel.repositoriooym.entity.Proyecto;
-import com.telcel.repositoriooym.entity.Responsable;
-import com.telcel.repositoriooym.entity.TipoProyecto;
-import com.telcel.repositoriooym.repository.IProyectoRepository;
-import com.telcel.repositoriooym.repository.IResponsableRepository;
-import com.telcel.repositoriooym.repository.ITipoProyectoRepository;
+import com.telcel.repositoriooym.entity.*;
+import com.telcel.repositoriooym.repository.*;
 import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
@@ -30,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +60,18 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Autowired
     private ITipoProyectoRepository tipoProyectoRepository;
+
+    /**
+     * Objeto de tipo IRegionRepository con el CRUD respectivo
+     */
+    @Autowired
+    private IRegionRepository regionRepository;
+
+    /**
+     * Objeto de tipo ISitioRepository con el CRUD respectivo
+     */
+    @Autowired
+    private ISitioRepository sitioRepository;
 
     @Autowired
     private ISubirArchivoService uploadFileService;
@@ -311,7 +320,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
    @Transactional
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId,String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaLiberacion, MultipartFile fileF60,
                                                      MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -327,14 +336,26 @@ public class ProyectoServiceImpl implements IProyectoService {
             // Persistimos sólo datos básicos del proyecto
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
             Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
+            Optional<Sitio> sitio = this.sitioRepository.findById(sitioId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            if (!tipoProyecto.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Tipo de proyecto no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            if (!sitio.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Sitio no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             proyecto.setResponsableProyecto(responsable.get());
             proyecto.setTipoProyecto(tipoProyecto.get());
+            proyecto.setSitio(sitio.get());
             proyecto.setNombre(proyecto.getNombre().toUpperCase());
 
             Proyecto persistido = this.proyectoRepository.save(proyecto);
@@ -409,7 +430,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId,String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaLiberacion, MultipartFile fileF60,
                                                        MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -434,6 +455,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setNodos(proyecto.getNodos());
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
             Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
+            Optional<Sitio> sitio = this.sitioRepository.findById(sitioId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
@@ -445,8 +467,14 @@ public class ProyectoServiceImpl implements IProyectoService {
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            if (!sitio.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Sitio no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             proyectoActualizado.setResponsableProyecto(responsable.get());
             proyectoActualizado.setTipoProyecto(tipoProyecto.get());
+            proyectoActualizado.setSitio(sitio.get());
 
             // Helper local para subir los archivos
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
@@ -515,6 +543,17 @@ public class ProyectoServiceImpl implements IProyectoService {
         // Obtengo el proyecto o se lanza excepcion si no existe
         Proyecto proyecto = proyectoRepository.findById(idProyecto).orElseThrow(() ->
                 new RuntimeException("No existe el proyecto con id " + idProyecto));
+
+        // Obtenemos el año del proyecto
+        int anioProyecto = proyecto.getAnio();
+
+        // Obtenemos el año en curso
+        int anioActual = LocalDate.now().getYear();
+
+        // Restriccion
+        if (anioProyecto != anioActual) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Sólo se pueden eliminar proyectos del año " + anioActual);
+        }
 
         // Sanitizamos la carpeta con el nombre real en disco con _
         String carpeta = proyecto.getNombre().trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
