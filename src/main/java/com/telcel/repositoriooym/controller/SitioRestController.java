@@ -108,7 +108,7 @@ public class SitioRestController {
         sitio.setTelefonoContacto(telefonoContacto);
         sitio.setCorreoContacto(correoContacto);
 
-        return this.sitioService.update(sitio, regionId, idSitio);
+        return this.sitioService.update(sitio, idSitio, regionId);
     }
 
     /**

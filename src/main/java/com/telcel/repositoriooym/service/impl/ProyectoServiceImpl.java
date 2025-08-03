@@ -320,7 +320,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
    @Transactional
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
                                                      MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -357,6 +357,8 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyecto.setTipoProyecto(tipoProyecto.get());
             proyecto.setSitio(sitio.get());
             proyecto.setNombre(proyecto.getNombre().toUpperCase());
+            proyecto.setFechaLiberacion(fechaLiberacion);
+            proyecto.setFechaInicio(fechaInicio);
 
             Proyecto persistido = this.proyectoRepository.save(proyecto);
 
@@ -430,7 +432,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
                                                        MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -452,6 +454,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             // Actualizamos los campos basicos (Strings)
             proyectoActualizado.setNombre(proyecto.getNombre());
             proyectoActualizado.setFechaLiberacion(fechaLiberacion);
+            proyectoActualizado.setFechaInicio(fechaInicio);
             proyectoActualizado.setNodos(proyecto.getNodos());
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
             Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);

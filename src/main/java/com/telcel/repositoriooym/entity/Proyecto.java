@@ -38,6 +38,13 @@ public class Proyecto implements Serializable {
     private String nombre;
 
     /**
+     * Atributo que identifica la fecha de inicio del proyecto
+      */
+    @Column(name = "fecha_inicio")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private String fechaInicio;
+
+    /**
      * Atributo que identifica la fecha de publicacion
      */
     @Column(name = "fecha_liberacion")
@@ -202,14 +209,8 @@ public class Proyecto implements Serializable {
     private TipoProyecto tipoProyecto;
 
     /**
-     * Region donde se encuentra el proyecto
+     * Sitio y region del proyecto
      */
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinColumn(name = "region_id")
-    private Region region;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "sitio_id")

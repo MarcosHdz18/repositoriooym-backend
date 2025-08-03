@@ -147,6 +147,7 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
             @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
             @RequestParam("nombre") String nombre,
+            @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
             @RequestParam("nodos") String nodos,
             @RequestParam("responsableId") Long responsableId,
@@ -169,7 +170,7 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId,fechaLiberacion , fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
+            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
                     fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
                     fileCartaResponsivaGsoc, fileOtros);
@@ -236,7 +237,8 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
             @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
-            @RequestParam("nombre") String nombre,
+            @RequestParam(value = "nombre") String nombre,
+            @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
             @RequestParam("nodos") String nodos,
             @RequestParam("responsableId") Long responsableId,
@@ -258,7 +260,7 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
+            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
                     fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
                     fileCartaResponsivaGsoc,fileOtros);
