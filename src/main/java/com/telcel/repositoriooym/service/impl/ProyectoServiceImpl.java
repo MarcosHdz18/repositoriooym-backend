@@ -379,7 +379,7 @@ public class ProyectoServiceImpl implements IProyectoService {
                     }
                 } else {
                     // se podra usar el valor antiguamente guardado, si se prefiere:
-                    return defecto != null ? defecto : "Pendiente";
+                    return defecto != null ? defecto : "NA";
                 }
             };
 
@@ -494,7 +494,7 @@ public class ProyectoServiceImpl implements IProyectoService {
                     }
                 } else {
                     // se podra usar el valor antiguamente guardado, si se prefiere:
-                    return defecto != null ? defecto : "Pendiente";
+                    return defecto != null ? defecto : "NA";
                 }
             };
 
