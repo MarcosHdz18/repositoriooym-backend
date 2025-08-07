@@ -38,8 +38,6 @@ import java.util.function.BiFunction;
 /**
  * @author marcos.hernandez
  */
-
-@CrossOrigin(origins = "http://localhost:8083", exposedHeaders = "Content-Disposition")
 @RestController
 @RequestMapping("/api/v1")
 public class ProyectoRestController {
