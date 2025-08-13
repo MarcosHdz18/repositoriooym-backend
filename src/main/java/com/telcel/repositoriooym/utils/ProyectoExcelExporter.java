@@ -138,12 +138,12 @@ public class ProyectoExcelExporter {
             createCell(row, columnCount++, proyecto.getLld(), style);
             createCell(row, columnCount++, proyecto.getHld(), style);
             createCell(row, columnCount++, proyecto.getLayout(), style);
+            createCell(row, columnCount++, proyecto.getPresentacion(), style);
             createCell(row, columnCount++, proyecto.getSla(), style);
             createCell(row, columnCount++, proyecto.getReporteTransferenciaOperativa(), style);
             createCell(row, columnCount++, proyecto.getAtpFisico(), style);
             createCell(row, columnCount++, proyecto.getAtpFisicoFirmado(), style);
             createCell(row, columnCount++, proyecto.getAtpLogico(), style);
-            createCell(row, columnCount++, proyecto.getAtpLogicoFirmado(), style);
             createCell(row, columnCount++, proyecto.getReporteFotografico(), style);
             createCell(row, columnCount++, proyecto.getAsignacionFuerzaEspacio(), style);
             createCell(row, columnCount++, proyecto.getInventarioHardware(), style);
