@@ -79,6 +79,12 @@ public class Proyecto implements Serializable {
     private String nodos;
 
     /**
+     * Archivo presentacion con la matriz de escalacion
+     */
+    @Column(name = "presentacion", length = 512)
+    private String presentacion;
+
+    /**
      * Ruta del documento F60
      */
     @Column(name = "f60", length = 512)
@@ -143,12 +149,6 @@ public class Proyecto implements Serializable {
      */
     @Column(name = "atp_logico", length = 512)
     private String atpLogico;
-
-    /**
-     * Ruta del documento protocolo logico firmado del proyecto
-     */
-    @Column(name = "atp_logico_firmado", length = 512)
-    private String atpLogicoFirmado;
 
     /**
      * Ruta del documento reporte de transferencia operativa del proyecto

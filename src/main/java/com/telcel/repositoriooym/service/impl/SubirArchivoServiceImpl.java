@@ -14,6 +14,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 /**
@@ -101,7 +102,7 @@ public class SubirArchivoServiceImpl implements ISubirArchivoService {
      * @throws IOException
      */
     @Override
-    public String copiarArchivoEnSubCarpeta(String folderName, MultipartFile file) throws IOException {
+    public String copiarArchivoEnSubCarpeta(String folderName, MultipartFile file, boolean overwrite) throws IOException {
 
         // Sanitizar el nombre de la carpeta
         String safeName = folderName.trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
@@ -114,8 +115,13 @@ public class SubirArchivoServiceImpl implements ISubirArchivoService {
         String filename = file.getOriginalFilename();
         Path destination = projectFolder.resolve(filename).toAbsolutePath();
 
-        // Copia el archivo en la carpeta creada con anterioridad
-        Files.copy(file.getInputStream(), destination);
+        if (overwrite) {
+            // Sobreescribe el archivo en la carpeta creada con anterioridad
+            Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        } else {
+            // Copia el archivo en la carpeta creada con anterioridad
+            Files.copy(file.getInputStream(), destination);
+        }
 
         // Devuelve la ruta relativa para guardar en BD: "folderName/filename"
         return safeName + "/" +filename;

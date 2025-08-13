@@ -130,13 +130,13 @@ public class ProyectoRestController {
             @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
             @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
             @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
+            @RequestParam(value = "filePresentacion", required = false) MultipartFile filePresentacion,
             @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
             @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
             @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
             @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
             @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
             @RequestParam(value = "fileAtpLogico", required = false) MultipartFile fileAtpLogico,
-            @RequestParam(value = "fileAtpLogicoFirmado", required = false) MultipartFile fileAtpLogicoFirmado,
             @RequestParam(value = "fileReporteTransferenciaOperativa", required = false) MultipartFile fileReporteTransferenciaOperativa,
             @RequestParam(value = "fileCartaResponsivaIaaS", required = false) MultipartFile fileCartaResponsivaIaaS,
             @RequestParam(value = "fileCartaResponsivaPlataforma", required = false) MultipartFile fileCartaResponsivaPlataforma,
@@ -168,10 +168,10 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
-                    fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
-                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
-                    fileCartaResponsivaGsoc, fileOtros);
+            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
+                    filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
+                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
+                    fileCartaResponsivaHa, fileCartaResponsivaGsoc, fileOtros);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -221,13 +221,13 @@ public class ProyectoRestController {
             @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
             @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
             @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
+            @RequestParam(value = "filePresentacion", required = false) MultipartFile filePresentacion,
             @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
             @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
             @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
             @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
             @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
             @RequestParam(value = "fileAtpLogico", required = false) MultipartFile fileAtpLogico,
-            @RequestParam(value = "fileAtpLogicoFirmado", required = false) MultipartFile fileAtpLogicoFirmado,
             @RequestParam(value = "fileReporteTransferenciaOperativa", required = false) MultipartFile fileReporteTransferenciaOperativa,
             @RequestParam(value = "fileCartaResponsivaIaaS", required = false) MultipartFile fileCartaResponsivaIaaS,
             @RequestParam(value = "fileCartaResponsivaPlataforma", required = false) MultipartFile fileCartaResponsivaPlataforma,
@@ -258,10 +258,10 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla, fileReporteFotografico,
-                    fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileAtpLogicoFirmado,
-                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa,
-                    fileCartaResponsivaGsoc,fileOtros);
+            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
+                    filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
+                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
+                    fileCartaResponsivaHa, fileCartaResponsivaGsoc,fileOtros);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -303,7 +303,6 @@ public class ProyectoRestController {
             case "atpfisico": filename = proyecto.getAtpFisico(); break;
             case "atpfisicofirmado": filename = proyecto.getAtpFisicoFirmado(); break;
             case "atplogico": filename = proyecto.getAtpLogico(); break;
-            case "atplogicofirmado": filename = proyecto.getAtpLogicoFirmado(); break;
             case "reportetransferenciaoperativa": filename = proyecto.getReporteTransferenciaOperativa(); break;
             case "cartaresponsivaiaas": filename = proyecto.getCartaResponsivaIaaS(); break;
             case "cartaresponsivaplataforma": filename = proyecto.getCartaResponsivaPlataforma(); break;

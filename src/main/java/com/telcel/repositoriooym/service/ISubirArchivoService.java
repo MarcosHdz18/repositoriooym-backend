@@ -44,5 +44,5 @@ public interface ISubirArchivoService {
      * @return String como tipo de dato para almacenar el path
      * @throws IOException
      */
-    public String copiarArchivoEnSubCarpeta(String folderName, MultipartFile file) throws IOException;
+    public String copiarArchivoEnSubCarpeta(String folderName, MultipartFile file, boolean overwrite) throws IOException;
 }

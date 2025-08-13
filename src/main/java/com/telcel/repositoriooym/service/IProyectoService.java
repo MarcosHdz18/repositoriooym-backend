@@ -38,10 +38,10 @@ public interface IProyectoService {
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
     public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
-                                                     MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                     MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
                                                      MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
                                                      MultipartFile fileOtros);
@@ -53,10 +53,10 @@ public interface IProyectoService {
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
     public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
-                                                       MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                       MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
                                                        MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
                                                        MultipartFile fileOtros);

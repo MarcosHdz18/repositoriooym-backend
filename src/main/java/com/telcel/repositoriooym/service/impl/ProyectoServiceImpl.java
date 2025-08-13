@@ -115,7 +115,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String atpFisico = proyecto.getAtpFisico();
                     String atpFisicoFirmado = proyecto.getAtpFisicoFirmado();
                     String atpLogico = proyecto.getAtpLogico();
-                    String atpLogicoFirmado = proyecto.getAtpLogicoFirmado();
                     String reporteTransferenciaOperativa = proyecto.getReporteTransferenciaOperativa();
                     String cartaResponsivaIaaS = proyecto.getCartaResponsivaIaaS();
                     String cartaResponsivaPlataforma = proyecto.getCartaResponsivaPlataforma();
@@ -135,7 +134,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                     proyecto.setAtpFisico(atpFisico);
                     proyecto.setAtpFisicoFirmado(atpFisicoFirmado);
                     proyecto.setAtpLogico(atpLogico);
-                    proyecto.setAtpLogicoFirmado(atpLogicoFirmado);
                     proyecto.setReporteTransferenciaOperativa(reporteTransferenciaOperativa);
                     proyecto.setCartaResponsivaIaaS(cartaResponsivaIaaS);
                     proyecto.setCartaResponsivaPlataforma(cartaResponsivaPlataforma);
@@ -187,7 +185,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                 String atpFisico = proyecto.get().getAtpFisico();
                 String atpFisicoFirmado = proyecto.get().getAtpFisicoFirmado();
                 String atpLogico = proyecto.get().getAtpLogico();
-                String atpLogicoFirmado = proyecto.get().getAtpLogicoFirmado();
                 String reporteTransferenciaOperativa = proyecto.get().getReporteTransferenciaOperativa();
                 String cartaResponsivaIaaS = proyecto.get().getCartaResponsivaIaaS();
                 String cartaResponsivaPlataforma = proyecto.get().getCartaResponsivaPlataforma();
@@ -207,7 +204,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                 proyecto.get().setAtpFisico(atpFisico);
                 proyecto.get().setAtpFisicoFirmado(atpFisicoFirmado);
                 proyecto.get().setAtpLogico(atpLogico);
-                proyecto.get().setAtpLogicoFirmado(atpLogicoFirmado);
                 proyecto.get().setReporteTransferenciaOperativa(reporteTransferenciaOperativa);
                 proyecto.get().setCartaResponsivaIaaS(cartaResponsivaIaaS);
                 proyecto.get().setCartaResponsivaPlataforma(cartaResponsivaPlataforma);
@@ -266,7 +262,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String atpFisico = proyecto.getAtpFisico();
                     String atpFisicoFirmado = proyecto.getAtpFisicoFirmado();
                     String atpLogico = proyecto.getAtpLogico();
-                    String atpLogicoFirmado = proyecto.getAtpLogicoFirmado();
                     String reporteTransferenciaOperativa = proyecto.getReporteTransferenciaOperativa();
                     String cartaResponsivaIaaS = proyecto.getCartaResponsivaIaaS();
                     String cartaResponsivaPlataforma = proyecto.getCartaResponsivaPlataforma();
@@ -286,7 +281,6 @@ public class ProyectoServiceImpl implements IProyectoService {
                     proyecto.setAtpFisico(atpFisico);
                     proyecto.setAtpFisicoFirmado(atpFisicoFirmado);
                     proyecto.setAtpLogico(atpLogico);
-                    proyecto.setAtpLogicoFirmado(atpLogicoFirmado);
                     proyecto.setReporteTransferenciaOperativa(reporteTransferenciaOperativa);
                     proyecto.setCartaResponsivaIaaS(cartaResponsivaIaaS);
                     proyecto.setCartaResponsivaPlataforma(cartaResponsivaPlataforma);
@@ -321,10 +315,10 @@ public class ProyectoServiceImpl implements IProyectoService {
     @Override
    @Transactional
     public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
-                                                     MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                     MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
                                                      MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
                                                      MultipartFile fileOtros) {
@@ -369,7 +363,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
                 if (mpf != null && !mpf.isEmpty()) {
                     try {
-                        return uploadFileService.copiarArchivoEnSubCarpeta(persistido.getNombre(), mpf);
+                        return uploadFileService.copiarArchivoEnSubCarpeta(persistido.getNombre(), mpf, false);
                     } catch (IOException e) {
                         logger.error("Error al copiar {} en subcarpeta {}: {}",
                                 mpf.getOriginalFilename(),
@@ -389,13 +383,13 @@ public class ProyectoServiceImpl implements IProyectoService {
             persistido.setHld(guardarODefault.apply(fileHld, proyecto.getHld()));
             persistido.setLayout(guardarODefault.apply(fileLayout, proyecto.getLayout()));
             persistido.setSla(guardarODefault.apply(fileSla, proyecto.getSla()));
+            persistido.setPresentacion(guardarODefault.apply(filePresentacion, proyecto.getPresentacion()));
             persistido.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyecto.getReporteFotografico()));
             persistido.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyecto.getAsignacionFuerzaEspacio()));
             persistido.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyecto.getInventarioHardware()));
             persistido.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyecto.getAtpFisico()));
             persistido.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyecto.getAtpFisicoFirmado()));
             persistido.setAtpLogico(guardarODefault.apply(fileAtpLogico, proyecto.getAtpLogico()));
-            persistido.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado, proyecto.getAtpLogicoFirmado()));
             persistido.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa, proyecto.getReporteTransferenciaOperativa()));
             persistido.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS, proyecto.getCartaResponsivaIaaS()));
             persistido.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma, proyecto.getCartaResponsivaPlataforma()));
@@ -433,10 +427,10 @@ public class ProyectoServiceImpl implements IProyectoService {
     @Override
     @Transactional
     public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
-                                                       MultipartFile fileAtpLogico, MultipartFile fileAtpLogicoFirmado, MultipartFile fileReporteTransferenciaOperativa,
+                                                       MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
                                                        MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
                                                        MultipartFile fileOtros) {
@@ -484,7 +478,7 @@ public class ProyectoServiceImpl implements IProyectoService {
                 if (mpf != null && !mpf.isEmpty()) {
                     try {
                         return uploadFileService.copiarArchivoEnSubCarpeta(
-                                proyectoActualizado.getNombre(), mpf);
+                                proyectoActualizado.getNombre(), mpf, true);
                     } catch (IOException e) {
                         logger.error("Error al copiar {} en subcarpeta {}: {}",
                                 mpf.getOriginalFilename(),
@@ -504,13 +498,13 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setHld(guardarODefault.apply(fileHld, proyectoActualizado.getHld()));
             proyectoActualizado.setLayout(guardarODefault.apply(fileLayout, proyectoActualizado.getLayout()));
             proyectoActualizado.setSla(guardarODefault.apply(fileSla, proyectoActualizado.getSla()));
+            proyectoActualizado.setPresentacion(guardarODefault.apply(filePresentacion, proyecto.getPresentacion()));
             proyectoActualizado.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyectoActualizado.getReporteFotografico()));
             proyectoActualizado.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoActualizado.getAsignacionFuerzaEspacio()));
             proyectoActualizado.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyectoActualizado.getInventarioHardware()));
             proyectoActualizado.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyectoActualizado.getAtpFisico()));
             proyectoActualizado.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyectoActualizado.getAtpFisicoFirmado()));
             proyectoActualizado.setAtpLogico(guardarODefault.apply(fileAtpLogico, proyectoActualizado.getAtpLogico()));
-            proyectoActualizado.setAtpLogicoFirmado(guardarODefault.apply(fileAtpLogicoFirmado, proyectoActualizado.getAtpLogicoFirmado()));
             proyectoActualizado.setReporteTransferenciaOperativa(guardarODefault.apply(fileReporteTransferenciaOperativa, proyectoActualizado.getReporteTransferenciaOperativa()));
             proyectoActualizado.setCartaResponsivaIaaS(guardarODefault.apply(fileCartaResponsivaIaaS, proyectoActualizado.getCartaResponsivaIaaS()));
             proyectoActualizado.setCartaResponsivaPlataforma(guardarODefault.apply(fileCartaResponsivaPlataforma, proyectoActualizado.getCartaResponsivaPlataforma()));
