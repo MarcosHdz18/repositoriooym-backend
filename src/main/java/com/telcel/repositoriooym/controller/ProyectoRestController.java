@@ -199,7 +199,6 @@ public class ProyectoRestController {
      * @param fileAtpFisico
      * @param fileAtpFisicoFirmado
      * @param fileAtpLogico
-     * @param fileAtpLogicoFirmado
      * @param fileReporteTransferenciaOperativa
      * @param fileCartaResponsivaIaaS
      * @param fileCartaResponsivaPlataforma
@@ -296,6 +295,7 @@ public class ProyectoRestController {
             case "lld": filename = proyecto.getLld(); break;
             case "hld": filename = proyecto.getHld(); break;
             case "layout": filename = proyecto.getLayout(); break;
+            case "presentacion": filename = proyecto.getPresentacion(); break;
             case "sla": filename = proyecto.getSla(); break;
             case "reportefotografico": filename = proyecto.getReporteFotografico(); break;
             case "asignacionfuerzaespacio": filename = proyecto.getAsignacionFuerzaEspacio(); break;

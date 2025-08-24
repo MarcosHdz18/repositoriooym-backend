@@ -79,12 +79,6 @@ public class Proyecto implements Serializable {
     private String nodos;
 
     /**
-     * Archivo presentacion con la matriz de escalacion
-     */
-    @Column(name = "presentacion", length = 512)
-    private String presentacion;
-
-    /**
      * Ruta del documento F60
      */
     @Column(name = "f60", length = 512)
@@ -107,6 +101,12 @@ public class Proyecto implements Serializable {
      */
     @Column(name = "layout", length = 512)
     private String layout;
+
+    /**
+     * Archivo presentacion con la matriz de escalacion
+     */
+    @Column(name = "presentacion", length = 512)
+    private String presentacion;
 
     /**
      * Ruta del documento para el soporte del proyecto

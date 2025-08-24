@@ -488,7 +488,7 @@ public class ProyectoServiceImpl implements IProyectoService {
                     }
                 } else {
                     // se podra usar el valor antiguamente guardado, si se prefiere:
-                    return defecto != null ? defecto : "NA";
+                    return defecto;
                 }
             };
 
@@ -498,7 +498,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setHld(guardarODefault.apply(fileHld, proyectoActualizado.getHld()));
             proyectoActualizado.setLayout(guardarODefault.apply(fileLayout, proyectoActualizado.getLayout()));
             proyectoActualizado.setSla(guardarODefault.apply(fileSla, proyectoActualizado.getSla()));
-            proyectoActualizado.setPresentacion(guardarODefault.apply(filePresentacion, proyecto.getPresentacion()));
+            proyectoActualizado.setPresentacion(guardarODefault.apply(filePresentacion, proyectoActualizado.getPresentacion()));
             proyectoActualizado.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyectoActualizado.getReporteFotografico()));
             proyectoActualizado.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoActualizado.getAsignacionFuerzaEspacio()));
             proyectoActualizado.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyectoActualizado.getInventarioHardware()));
@@ -511,7 +511,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyectoActualizado.getCartaResponsivaStorage()));
             proyectoActualizado.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyectoActualizado.getCartaResponsivaHa()));
             proyectoActualizado.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyectoActualizado.getCartaResponsivaGsoc()));
-            proyectoActualizado.setOtros(guardarODefault.apply(fileOtros, proyecto.getOtros()));
+            proyectoActualizado.setOtros(guardarODefault.apply(fileOtros, proyectoActualizado.getOtros()));
 
             // Persistir en la base de datos
             proyectoRepository.save(proyectoActualizado);
