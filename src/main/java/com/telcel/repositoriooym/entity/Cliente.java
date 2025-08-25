@@ -15,7 +15,7 @@ public class Cliente {
      * Identificador unico de la clase Cliente
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_cliente")
     private Long idCliente;
 
