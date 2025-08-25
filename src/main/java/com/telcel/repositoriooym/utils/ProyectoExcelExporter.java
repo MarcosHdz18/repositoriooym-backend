@@ -66,26 +66,27 @@ public class ProyectoExcelExporter {
         createCell(row, 6, "Responsable", style);
         createCell(row, 7,"Region", style);
         createCell(row, 8, "Sitio", style);
-        createCell(row, 9, "Tipo de proyecto", style);
-        createCell(row, 10, "Archivo F60", style);
-        createCell(row, 11, "Archivo LLD", style);
-        createCell(row, 12, "Archivo HLD", style);
-        createCell(row, 13, "Archivo Layout", style);
-        createCell(row, 14, "Archivo SLA", style);
-        createCell(row, 15, "Archivo RTO", style);
-        createCell(row, 16, "Archivo ATP Físico", style);
-        createCell(row, 17, "Archivo ATP Físico Firmado", style);
-        createCell(row, 18, "Archivo ATP Lógico", style);
-        createCell(row, 19, "Archivo ATP Lógico Firmado", style);
-        createCell(row, 20, "Archivo Reporte Fotográfico", style);
-        createCell(row, 21, "Archivo Asignación Fuerza-Espacio", style);
-        createCell(row, 22, "Archivo Inventario Hardware", style);
-        createCell(row, 23, "Archivo Carta Responsiva IaaS", style);
-        createCell(row, 24, "Archivo Carta Responsiva Plataforma", style);
-        createCell(row, 25, "Archivo Carta Responsiva Storage", style);
-        createCell(row, 26, "Archivo Carta Responsiva HA", style);
-        createCell(row, 27, "Archivo Carta Responsiva GSOC", style);
-        createCell(row, 28, "Archivo Otros", style);
+        createCell(row, 9, "Cliente", style);
+        createCell(row, 10, "Tipo de proyecto", style);
+        createCell(row, 11, "Archivo F60", style);
+        createCell(row, 12, "Archivo LLD", style);
+        createCell(row, 13, "Archivo HLD", style);
+        createCell(row, 14, "Archivo Layout", style);
+        createCell(row, 15, "Archivo SLA", style);
+        createCell(row, 16, "Archivo RTO", style);
+        createCell(row, 17, "Archivo ATP Físico", style);
+        createCell(row, 18, "Archivo ATP Físico Firmado", style);
+        createCell(row, 19, "Archivo ATP Lógico", style);
+        createCell(row, 20, "Archivo ATP Lógico Firmado", style);
+        createCell(row, 21, "Archivo Reporte Fotográfico", style);
+        createCell(row, 22, "Archivo Asignación Fuerza-Espacio", style);
+        createCell(row, 23, "Archivo Inventario Hardware", style);
+        createCell(row, 24, "Archivo Carta Responsiva IaaS", style);
+        createCell(row, 25, "Archivo Carta Responsiva Plataforma", style);
+        createCell(row, 26, "Archivo Carta Responsiva Storage", style);
+        createCell(row, 27, "Archivo Carta Responsiva HA", style);
+        createCell(row, 28, "Archivo Carta Responsiva GSOC", style);
+        createCell(row, 29, "Archivo Otros", style);
     }
 
     /**
@@ -133,6 +134,7 @@ public class ProyectoExcelExporter {
             createCell(row, columnCount++, proyecto.getResponsableProyecto().getNombre(), style);
             createCell(row, columnCount++, proyecto.getSitio().getRegion().getNombre(), style);
             createCell(row, columnCount++, proyecto.getSitio().getNombre(), style);
+            createCell(row, columnCount++, proyecto.getCliente().getNombre(), style);
             createCell(row, columnCount++, proyecto.getTipoProyecto().getNombre(), style);
             createCell(row, columnCount++, proyecto.getF60(), style);
             createCell(row, columnCount++, proyecto.getLld(), style);

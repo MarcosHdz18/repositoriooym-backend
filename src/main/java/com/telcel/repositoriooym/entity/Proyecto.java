@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
 /**
  * @author marcos.hernandez
@@ -197,7 +198,7 @@ public class Proyecto implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinColumn(name = "id_responsable")
+    @JoinColumn(name = "id_responsable", nullable = false)
     private Responsable responsableProyecto;
 
     /**
@@ -213,6 +214,14 @@ public class Proyecto implements Serializable {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @JoinColumn(name = "sitio_id")
+    @JoinColumn(name = "sitio_id", nullable = false)
     private Sitio sitio;
+
+    /**
+     * Cliente
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 }

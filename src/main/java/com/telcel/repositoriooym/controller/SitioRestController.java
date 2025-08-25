@@ -115,7 +115,7 @@ public class SitioRestController {
      * @param idSitio Identificador unico
      * @return Response Entity con el estatus de la respuesta
      */
-    @DeleteMapping("/sitios/{idSitios}")
+    @DeleteMapping("/sitios/{idSitio}")
     public ResponseEntity<SitioResponseRest> deleteSitio(@PathVariable Long idSitio) {
         return this.sitioService.deleteById(idSitio);
     }

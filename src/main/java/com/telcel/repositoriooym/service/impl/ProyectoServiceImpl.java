@@ -73,6 +73,12 @@ public class ProyectoServiceImpl implements IProyectoService {
     @Autowired
     private ISitioRepository sitioRepository;
 
+    /**
+     * Objeto de tipo IClienteRepository con el CRUD respectivo
+     */
+    @Autowired
+    private IClienteRepository clienteRepository;
+
     @Autowired
     private ISubirArchivoService uploadFileService;
 
@@ -314,7 +320,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
    @Transactional
-    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
                                                      MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                      MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -331,6 +337,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
             Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
             Optional<Sitio> sitio = this.sitioRepository.findById(sitioId);
+            Optional<Cliente> cliente = this.clienteRepository.findById(clienteId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
@@ -347,9 +354,15 @@ public class ProyectoServiceImpl implements IProyectoService {
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            if (!cliente.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Cliente no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             proyecto.setResponsableProyecto(responsable.get());
             proyecto.setTipoProyecto(tipoProyecto.get());
             proyecto.setSitio(sitio.get());
+            proyecto.setCliente(cliente.get());
             proyecto.setNombre(proyecto.getNombre().toUpperCase());
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setFechaInicio(fechaInicio);
@@ -426,7 +439,7 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId,String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
                                                        MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
                                                        MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
@@ -453,6 +466,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             Optional<Responsable> responsable = this.responsableRepository.findById(responsableId);
             Optional<TipoProyecto> tipoProyecto = this.tipoProyectoRepository.findById(tipoProyectoId);
             Optional<Sitio> sitio = this.sitioRepository.findById(sitioId);
+            Optional<Cliente> cliente = this.clienteRepository.findById(clienteId);
 
             if (!responsable.isPresent()) {
                 response.setMetadata("Respuesta no exitosa", "-1", "Responsable no encontrado");
@@ -469,9 +483,15 @@ public class ProyectoServiceImpl implements IProyectoService {
                 return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
             }
 
+            if (!cliente.isPresent()) {
+                response.setMetadata("Respuesta no exitosa", "-1", "Cliente no encontrado");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
             proyectoActualizado.setResponsableProyecto(responsable.get());
             proyectoActualizado.setTipoProyecto(tipoProyecto.get());
             proyectoActualizado.setSitio(sitio.get());
+            proyectoActualizado.setCliente(cliente.get());
 
             // Helper local para subir los archivos
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {

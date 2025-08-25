@@ -150,7 +150,8 @@ public class ProyectoRestController {
             @RequestParam("nodos") String nodos,
             @RequestParam("responsableId") Long responsableId,
             @RequestParam("tipoProyectoId") Long tipoProyectoId,
-            @RequestParam("sitioId") Long sitioId) throws IOException {
+            @RequestParam("sitioId") Long sitioId,
+            @RequestParam(value = "clienteId", required = false) Long clienteId) throws IOException {
 
         // Inicializamos los valores de los objetos por default
         ProyectoResponseRest respuesta = new ProyectoResponseRest();
@@ -168,7 +169,7 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
+            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
                     filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
                     fileCartaResponsivaHa, fileCartaResponsivaGsoc, fileOtros);
@@ -241,6 +242,7 @@ public class ProyectoRestController {
             @RequestParam("responsableId") Long responsableId,
             @RequestParam("tipoProyectoId") Long tipoProyectoId,
             @RequestParam("sitioId") Long sitioId,
+            @RequestParam(value = "clienteId", required = false) Long clienteId,
             @PathVariable Long idProyecto) throws IOException {
 
         // Construimos la respuesta con el código de error si no se puede actualizar el proyecto
@@ -257,7 +259,7 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
+            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
                     filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
                     fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
                     fileCartaResponsivaHa, fileCartaResponsivaGsoc,fileOtros);
