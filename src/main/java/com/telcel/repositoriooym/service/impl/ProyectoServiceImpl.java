@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -26,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -62,12 +62,6 @@ public class ProyectoServiceImpl implements IProyectoService {
     private ITipoProyectoRepository tipoProyectoRepository;
 
     /**
-     * Objeto de tipo IRegionRepository con el CRUD respectivo
-     */
-    @Autowired
-    private IRegionRepository regionRepository;
-
-    /**
      * Objeto de tipo ISitioRepository con el CRUD respectivo
      */
     @Autowired
@@ -79,8 +73,23 @@ public class ProyectoServiceImpl implements IProyectoService {
     @Autowired
     private IClienteRepository clienteRepository;
 
+    /**
+     * Objeto de tipo ISubirArchivoService con las funcionalidades para subir los archivos
+     */
     @Autowired
     private ISubirArchivoService uploadFileService;
+
+    /**
+     * Objeto para la auditoria correspondiente
+     */
+    @Autowired
+    private IBitacoraRepository bitacoraRepository;
+
+    /**
+     * Objeto para la carga de archivos adjuntos del proyecto
+     */
+    @Autowired
+    private IDocumentoAdjuntoRepository adjuntoRepository;
 
     /**
      * Carpeta donde se almacenaran los archivos a subir
@@ -112,10 +121,14 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String f60 = proyecto.getF60();
                     String lld = proyecto.getLld();
                     String hld = proyecto.getHld();
+                    String memoriaTecnica = proyecto.getMemoriaTecnica();
                     String layout = proyecto.getLayout();
                     String sla = proyecto.getSla();
                     String reporteFotografico = proyecto.getReporteFotografico();
                     String asignacionFuerzaEspacio = proyecto.getAsignacionFuerzaEspacio();
+                    String etiquetado = proyecto.getEtiquetado();
+                    String planos = proyecto.getPlanos();
+                    String proyectoEjecutivo = proyecto.getProyectoEjecutivo();
                     String inventarioHardware = proyecto.getInventarioHardware();
                     String nodos = proyecto.getNodos();
                     String atpFisico = proyecto.getAtpFisico();
@@ -127,14 +140,20 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String cartaResponsivaStorage = proyecto.getCartaResponsivaStorage();
                     String cartaResponsivaHa = proyecto.getCartaResponsivaHa();
                     String cartaResponsivaGsoc = proyecto.getCartaResponsivaGsoc();
+                    String cartaResponsivaLlaves = proyecto.getCartaResponsivaLlaves();
+                    String otros = proyecto.getOtros();
 
                     proyecto.setF60(f60);
                     proyecto.setLld(lld);
                     proyecto.setHld(hld);
+                    proyecto.setMemoriaTecnica(memoriaTecnica);
                     proyecto.setLayout(layout);
                     proyecto.setSla(sla);
                     proyecto.setReporteFotografico(reporteFotografico);
                     proyecto.setAsignacionFuerzaEspacio(asignacionFuerzaEspacio);
+                    proyecto.setEtiquetado(etiquetado);
+                    proyecto.setPlanos(planos);
+                    proyecto.setProyectoEjecutivo(proyectoEjecutivo);
                     proyecto.setInventarioHardware(inventarioHardware);
                     proyecto.setNodos(nodos);
                     proyecto.setAtpFisico(atpFisico);
@@ -146,6 +165,8 @@ public class ProyectoServiceImpl implements IProyectoService {
                     proyecto.setCartaResponsivaStorage(cartaResponsivaStorage);
                     proyecto.setCartaResponsivaHa(cartaResponsivaHa);
                     proyecto.setCartaResponsivaGsoc(cartaResponsivaGsoc);
+                    proyecto.setCartaResponsivaLlaves(cartaResponsivaLlaves);
+                    proyecto.setOtros(otros);
 
                     proyectos.add(proyecto);
                 });
@@ -182,10 +203,14 @@ public class ProyectoServiceImpl implements IProyectoService {
                 String f60 = proyecto.get().getF60();
                 String lld = proyecto.get().getLld();
                 String hld = proyecto.get().getHld();
+                String memoriaTecnica = proyecto.get().getMemoriaTecnica();
                 String layout = proyecto.get().getLayout();
                 String sla = proyecto.get().getSla();
                 String reporteFotografico = proyecto.get().getReporteFotografico();
                 String asignacionFuerzaEspacio = proyecto.get().getAsignacionFuerzaEspacio();
+                String etiquetado = proyecto.get().getEtiquetado();
+                String planos = proyecto.get().getPlanos();
+                String proyectoEjecutivo = proyecto.get().getProyectoEjecutivo();
                 String inventarioHardware = proyecto.get().getInventarioHardware();
                 String nodos = proyecto.get().getNodos();
                 String atpFisico = proyecto.get().getAtpFisico();
@@ -197,14 +222,20 @@ public class ProyectoServiceImpl implements IProyectoService {
                 String cartaResponsivaStorage = proyecto.get().getCartaResponsivaStorage();
                 String cartaResponsivaHa = proyecto.get().getCartaResponsivaHa();
                 String cartaResponsivaGsoc = proyecto.get().getCartaResponsivaGsoc();
+                String cartaResponsivaLlaves = proyecto.get().getCartaResponsivaLlaves();
+                String otros = proyecto.get().getOtros();
 
                 proyecto.get().setF60(f60);
                 proyecto.get().setLld(lld);
                 proyecto.get().setHld(hld);
+                proyecto.get().setMemoriaTecnica(memoriaTecnica);
                 proyecto.get().setLayout(layout);
                 proyecto.get().setSla(sla);
                 proyecto.get().setReporteFotografico(reporteFotografico);
                 proyecto.get().setAsignacionFuerzaEspacio(asignacionFuerzaEspacio);
+                proyecto.get().setEtiquetado(etiquetado);
+                proyecto.get().setPlanos(planos);
+                proyecto.get().setProyectoEjecutivo(proyectoEjecutivo);
                 proyecto.get().setInventarioHardware(inventarioHardware);
                 proyecto.get().setNodos(nodos);
                 proyecto.get().setAtpFisico(atpFisico);
@@ -216,6 +247,8 @@ public class ProyectoServiceImpl implements IProyectoService {
                 proyecto.get().setCartaResponsivaStorage(cartaResponsivaStorage);
                 proyecto.get().setCartaResponsivaHa(cartaResponsivaHa);
                 proyecto.get().setCartaResponsivaGsoc(cartaResponsivaGsoc);
+                proyecto.get().setCartaResponsivaLlaves(cartaResponsivaLlaves);
+                proyecto.get().setOtros(otros);
 
                 proyectos.add(proyecto.get());
 
@@ -259,10 +292,14 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String f60 = proyecto.getF60();
                     String lld = proyecto.getLld();
                     String hld = proyecto.getHld();
+                    String memoriaTecnica = proyecto.getMemoriaTecnica();
                     String layout = proyecto.getLayout();
                     String sla = proyecto.getSla();
                     String reporteFotografico = proyecto.getReporteFotografico();
                     String asignacionFuerzaEspacio = proyecto.getAsignacionFuerzaEspacio();
+                    String etiquetado = proyecto.getEtiquetado();
+                    String planos = proyecto.getPlanos();
+                    String proyectoEjecutivo = proyecto.getProyectoEjecutivo();
                     String inventarioHardware = proyecto.getInventarioHardware();
                     String nodos = proyecto.getNodos();
                     String atpFisico = proyecto.getAtpFisico();
@@ -274,14 +311,20 @@ public class ProyectoServiceImpl implements IProyectoService {
                     String cartaResponsivaStorage = proyecto.getCartaResponsivaStorage();
                     String cartaResponsivaHa = proyecto.getCartaResponsivaHa();
                     String cartaResponsivaGsoc = proyecto.getCartaResponsivaGsoc();
+                    String cartaResponsivaLlaves = proyecto.getCartaResponsivaLlaves();
+                    String otros = proyecto.getOtros();
 
                     proyecto.setF60(f60);
                     proyecto.setLld(lld);
                     proyecto.setHld(hld);
+                    proyecto.setMemoriaTecnica(memoriaTecnica);
                     proyecto.setLayout(layout);
                     proyecto.setSla(sla);
                     proyecto.setReporteFotografico(reporteFotografico);
                     proyecto.setAsignacionFuerzaEspacio(asignacionFuerzaEspacio);
+                    proyecto.setEtiquetado(etiquetado);
+                    proyecto.setPlanos(planos);
+                    proyecto.setProyectoEjecutivo(proyectoEjecutivo);
                     proyecto.setInventarioHardware(inventarioHardware);
                     proyecto.setNodos(nodos);
                     proyecto.setAtpFisico(atpFisico);
@@ -293,6 +336,8 @@ public class ProyectoServiceImpl implements IProyectoService {
                     proyecto.setCartaResponsivaStorage(cartaResponsivaStorage);
                     proyecto.setCartaResponsivaHa(cartaResponsivaHa);
                     proyecto.setCartaResponsivaGsoc(cartaResponsivaGsoc);
+                    proyecto.setCartaResponsivaLlaves(cartaResponsivaLlaves);
+                    proyecto.setOtros(otros);
 
                     proyectos.add(proyecto);
                 });
@@ -321,13 +366,13 @@ public class ProyectoServiceImpl implements IProyectoService {
     @Override
    @Transactional
     public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
-                                                     MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileMemoriaTecnica, MultipartFile fileSid, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
+                                                     MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio, MultipartFile fileEtiquetado, MultipartFile filePlanos, MultipartFile fileProyectoEjecutivo,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                      MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
-                                                     MultipartFile fileOtros) {
+                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc, MultipartFile fileCartaResponsivaLlaves,
+                                                     MultipartFile fileOtros, MultipartFile[] archivosAdjuntos, String username) {
 
         ProyectoResponseRest response = new ProyectoResponseRest();
         List<Proyecto> proyectos = new ArrayList<>();
@@ -369,8 +414,33 @@ public class ProyectoServiceImpl implements IProyectoService {
 
             Proyecto persistido = this.proyectoRepository.save(proyecto);
 
-            // Elegimos como nombre de carpeta el nombre del proyecto (sanitizado por el servicio)
-            String carpeta = persistido.getNombre();
+            // Logica para subir archivos masivos
+            if (archivosAdjuntos != null && archivosAdjuntos.length > 0) {
+                try {
+                    // 1. Llamada física (Pasamos solo los 2 argumentos que espera el método)
+                    List<Map<String, String>> adjuntosGuardados = uploadFileService.guardarAdjuntosMasivosFisicos(persistido.getNombre(), archivosAdjuntos);
+
+                    // 2. Lógica de la Entity: Guardamos cada uno en la BD
+                    for (Map<String, String> datos : adjuntosGuardados) {
+                        DocumentoAdjunto documentoAdjunto = new DocumentoAdjunto();
+                        documentoAdjunto.setNombreArchivo(datos.get("nombre"));
+                        documentoAdjunto.setRutaArchivo(datos.get("ruta"));
+                        documentoAdjunto.setUsuarioSubio(username); // Usamos el username aquí en el Service de Proyectos
+                        documentoAdjunto.setProyecto(persistido);
+
+                        this.adjuntoRepository.save(documentoAdjunto);
+                    }
+                } catch (IOException e) {
+                    logger.error("Error al procesar adjuntos: {}", e.getMessage());
+                }
+            }
+
+            // Registro de la bitacora
+            Bitacora bitacora = new Bitacora();
+            bitacora.setAccion("CREATE");
+            bitacora.setUsuario(username);
+            bitacora.setDetalle("Creó el proyecto: " + persistido.getNombre() + " con ID: " + persistido.getIdProyecto());
+            this.bitacoraRepository.save(bitacora);
 
             // Helper local para subir los archivos
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
@@ -394,11 +464,16 @@ public class ProyectoServiceImpl implements IProyectoService {
             persistido.setF60(guardarODefault.apply(fileF60, proyecto.getF60()));
             persistido.setLld(guardarODefault.apply(fileLld, proyecto.getLld()));
             persistido.setHld(guardarODefault.apply(fileHld, proyecto.getHld()));
+            persistido.setMemoriaTecnica(guardarODefault.apply(fileMemoriaTecnica, persistido.getMemoriaTecnica()));
+            persistido.setSid(guardarODefault.apply(fileSid, persistido.getSid()));
             persistido.setLayout(guardarODefault.apply(fileLayout, proyecto.getLayout()));
             persistido.setSla(guardarODefault.apply(fileSla, proyecto.getSla()));
             persistido.setPresentacion(guardarODefault.apply(filePresentacion, proyecto.getPresentacion()));
             persistido.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyecto.getReporteFotografico()));
             persistido.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyecto.getAsignacionFuerzaEspacio()));
+            persistido.setEtiquetado(guardarODefault.apply(fileEtiquetado, persistido.getEtiquetado()));
+            persistido.setPlanos(guardarODefault.apply(filePlanos, persistido.getPlanos()));
+            persistido.setProyectoEjecutivo(guardarODefault.apply(fileProyectoEjecutivo, persistido.getProyectoEjecutivo()));
             persistido.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyecto.getInventarioHardware()));
             persistido.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyecto.getAtpFisico()));
             persistido.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyecto.getAtpFisicoFirmado()));
@@ -409,6 +484,7 @@ public class ProyectoServiceImpl implements IProyectoService {
             persistido.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyecto.getCartaResponsivaStorage()));
             persistido.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyecto.getCartaResponsivaHa()));
             persistido.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyecto.getCartaResponsivaGsoc()));
+            persistido.setCartaResponsivaLlaves(guardarODefault.apply(fileCartaResponsivaLlaves, proyecto.getCartaResponsivaLlaves()));
             persistido.setOtros(guardarODefault.apply(fileOtros, proyecto.getOtros()));
 
             // Actualiza la entidad con las rutas finales
@@ -439,14 +515,14 @@ public class ProyectoServiceImpl implements IProyectoService {
      */
     @Override
     @Transactional
-    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId,String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
-                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+    public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileMemoriaTecnica, MultipartFile fileSid, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
+                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio, MultipartFile fileEtiquetado, MultipartFile filePlanos, MultipartFile fileProyectoEjecutivo,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                        MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
-                                                       MultipartFile fileOtros) {
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc, MultipartFile fileCartaResponsivaLlaves,
+                                                       MultipartFile fileOtros, MultipartFile[] archivosAdjuntos, String username) {
 
         ProyectoResponseRest response = new ProyectoResponseRest();
 
@@ -457,6 +533,27 @@ public class ProyectoServiceImpl implements IProyectoService {
             // Recuperamos el proyecto existente o lanzamos excepcion si no existe en la base de datos
             Proyecto proyectoActualizado = proyectoRepository.findById(proyecto.getIdProyecto()).orElseThrow(() ->
                     new EntityNotFoundException("Proyecto con id " + proyecto.getIdProyecto() + " no existe"));
+
+            // Renombrado de la carpeta anterior
+            String nombreAnterior = proyectoActualizado.getNombre().trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
+            String nombreNuevo = proyecto.getNombre().trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
+
+            if (!nombreAnterior.equals(nombreNuevo)) {
+                Path rutaAntigua = Paths.get(documentacionProyectos, nombreAnterior);
+                Path rutaNueva = Paths.get(documentacionProyectos, nombreNuevo);
+
+                try {
+                    if (Files.exists(rutaAntigua)) {
+                        Files.move(rutaAntigua, rutaNueva, StandardCopyOption.REPLACE_EXISTING);
+                        logger.info("✔ Carpeta renombrada físicamente de {} a {}",  nombreAnterior, nombreNuevo);
+                        actualizarRutasPorRenombrado(proyectoActualizado, nombreAnterior, nombreNuevo);
+                    }
+
+                } catch (IOException ex) {
+                    logger.error("✖ Error crítico al renombrar carpeta: {}", ex.getMessage());
+                    throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No se pudo renombrar el directorio de archivos");
+                }
+            }
 
             // Actualizamos los campos basicos (Strings)
             proyectoActualizado.setNombre(proyecto.getNombre());
@@ -516,11 +613,16 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setF60(guardarODefault.apply(fileF60, proyectoActualizado.getF60()));
             proyectoActualizado.setLld(guardarODefault.apply(fileLld, proyectoActualizado.getLld()));
             proyectoActualizado.setHld(guardarODefault.apply(fileHld, proyectoActualizado.getHld()));
+            proyectoActualizado.setMemoriaTecnica(guardarODefault.apply(fileMemoriaTecnica, proyectoActualizado.getMemoriaTecnica()));
+            proyectoActualizado.setSid(guardarODefault.apply(fileSid, proyectoActualizado.getSid()));
             proyectoActualizado.setLayout(guardarODefault.apply(fileLayout, proyectoActualizado.getLayout()));
             proyectoActualizado.setSla(guardarODefault.apply(fileSla, proyectoActualizado.getSla()));
             proyectoActualizado.setPresentacion(guardarODefault.apply(filePresentacion, proyectoActualizado.getPresentacion()));
             proyectoActualizado.setReporteFotografico(guardarODefault.apply(fileReporteFotografico, proyectoActualizado.getReporteFotografico()));
             proyectoActualizado.setAsignacionFuerzaEspacio(guardarODefault.apply(fileAsignacionFuerzaEspacio, proyectoActualizado.getAsignacionFuerzaEspacio()));
+            proyectoActualizado.setEtiquetado(guardarODefault.apply(fileEtiquetado, proyectoActualizado.getEtiquetado()));
+            proyectoActualizado.setPlanos(guardarODefault.apply(filePlanos, proyectoActualizado.getPlanos()));
+            proyectoActualizado.setProyectoEjecutivo(guardarODefault.apply(fileProyectoEjecutivo, proyectoActualizado.getProyectoEjecutivo()));
             proyectoActualizado.setInventarioHardware(guardarODefault.apply(fileInventarioHardware, proyectoActualizado.getInventarioHardware()));
             proyectoActualizado.setAtpFisico(guardarODefault.apply(fileAtpFisico, proyectoActualizado.getAtpFisico()));
             proyectoActualizado.setAtpFisicoFirmado(guardarODefault.apply(fileAtpFisicoFirmado, proyectoActualizado.getAtpFisicoFirmado()));
@@ -531,10 +633,39 @@ public class ProyectoServiceImpl implements IProyectoService {
             proyectoActualizado.setCartaResponsivaStorage(guardarODefault.apply(fileCartaResponsivaStorage, proyectoActualizado.getCartaResponsivaStorage()));
             proyectoActualizado.setCartaResponsivaHa(guardarODefault.apply(fileCartaResponsivaHa, proyectoActualizado.getCartaResponsivaHa()));
             proyectoActualizado.setCartaResponsivaGsoc(guardarODefault.apply(fileCartaResponsivaGsoc, proyectoActualizado.getCartaResponsivaGsoc()));
+            proyectoActualizado.setCartaResponsivaLlaves(guardarODefault.apply(fileCartaResponsivaLlaves, proyectoActualizado.getCartaResponsivaLlaves()));
             proyectoActualizado.setOtros(guardarODefault.apply(fileOtros, proyectoActualizado.getOtros()));
+
+            // Registro de la bitacora
+            Bitacora bitacora = new Bitacora();
+            bitacora.setAccion("UPDATE");
+            bitacora.setUsuario(username);
+            bitacora.setDetalle("Actualizó datos/archivos del proyecto " + proyectoActualizado.getNombre() + " con el ID " + proyectoActualizado.getIdProyecto());
+            this.bitacoraRepository.save(bitacora);
 
             // Persistir en la base de datos
             proyectoRepository.save(proyectoActualizado);
+
+            // Logica para subir archivos masivos
+            if (archivosAdjuntos != null && archivosAdjuntos.length > 0) {
+                try {
+                    // 1. Llamada física (Pasamos solo los 2 argumentos que espera el método)
+                    List<Map<String, String>> adjuntosGuardados = uploadFileService.guardarAdjuntosMasivosFisicos(proyectoActualizado.getNombre(), archivosAdjuntos);
+
+                    // 2. Lógica de la Entity: Guardamos cada uno en la BD
+                    for (Map<String, String> datos : adjuntosGuardados) {
+                        DocumentoAdjunto documentoAdjunto = new DocumentoAdjunto();
+                        documentoAdjunto.setNombreArchivo(datos.get("nombre"));
+                        documentoAdjunto.setRutaArchivo(datos.get("ruta"));
+                        documentoAdjunto.setUsuarioSubio(username); // Usamos el username aquí en el Service de Proyectos
+                        documentoAdjunto.setProyecto(proyectoActualizado);
+
+                        this.adjuntoRepository.save(documentoAdjunto);
+                    }
+                } catch (IOException e) {
+                    logger.error("Error al procesar adjuntos: {}", e.getMessage());
+                }
+            }
 
             // Se arma el response
             response.getMetaList().add(Map.of("code", "00", "message", "¡Se ha actualizado el proyecto exitosamente"));
@@ -549,13 +680,44 @@ public class ProyectoServiceImpl implements IProyectoService {
     }
 
     /**
+     * Metodo auxiliar para el renombrado de rutas por actualización de nombre de proyecto y carpeta física
+     */
+    private void actualizarRutasPorRenombrado (Proyecto proyecto, String viejo, String nuevo) {
+        if (proyecto.getF60() != null) proyecto.setF60(proyecto.getF60().replace(viejo, nuevo));
+        if (proyecto.getLld() != null) proyecto.setLld(proyecto.getLld().replace(viejo, nuevo));
+        if (proyecto.getHld() != null) proyecto.setHld(proyecto.getHld().replace(viejo, nuevo));
+        if (proyecto.getMemoriaTecnica() != null) proyecto.setMemoriaTecnica(proyecto.getMemoriaTecnica().replace(viejo, nuevo));
+        if (proyecto.getSid() != null) proyecto.setSid(proyecto.getSid().replace(viejo, nuevo));
+        if (proyecto.getLayout() != null) proyecto.setLayout(proyecto.getLayout().replace(viejo, nuevo));
+        if (proyecto.getPresentacion() != null) proyecto.setPresentacion(proyecto.getPresentacion().replace(viejo, nuevo));
+        if (proyecto.getSla() != null) proyecto.setSla(proyecto.getSla().replace(viejo, nuevo));
+        if (proyecto.getReporteFotografico() != null) proyecto.setReporteFotografico(proyecto.getReporteFotografico().replace(viejo, nuevo));
+        if (proyecto.getAsignacionFuerzaEspacio() != null) proyecto.setAsignacionFuerzaEspacio(proyecto.getAsignacionFuerzaEspacio().replace(viejo, nuevo));
+        if (proyecto.getEtiquetado() != null) proyecto.setEtiquetado(proyecto.getEtiquetado().replace(viejo, nuevo));
+        if (proyecto.getPlanos() != null) proyecto.setPlanos(proyecto.getPlanos().replace(viejo, nuevo));
+        if (proyecto.getProyectoEjecutivo() != null) proyecto.setProyectoEjecutivo(proyecto.getProyectoEjecutivo().replace(viejo, nuevo));
+        if (proyecto.getInventarioHardware() != null) proyecto.setInventarioHardware(proyecto.getInventarioHardware().replace(viejo, nuevo));
+        if (proyecto.getAtpFisico() != null) proyecto.setAtpFisico(proyecto.getAtpFisico().replace(viejo, nuevo));
+        if (proyecto.getAtpFisicoFirmado() != null) proyecto.setAtpFisicoFirmado(proyecto.getAtpFisicoFirmado().replace(viejo, nuevo));
+        if (proyecto.getAtpLogico() != null) proyecto.setAtpLogico(proyecto.getAtpLogico().replace(viejo, nuevo));
+        if (proyecto.getReporteTransferenciaOperativa() != null) proyecto.setReporteTransferenciaOperativa(proyecto.getReporteTransferenciaOperativa().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaIaaS() != null) proyecto.setCartaResponsivaIaaS(proyecto.getCartaResponsivaIaaS().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaPlataforma() != null) proyecto.setCartaResponsivaPlataforma(proyecto.getCartaResponsivaPlataforma().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaStorage() != null) proyecto.setCartaResponsivaStorage(proyecto.getCartaResponsivaStorage().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaHa() != null) proyecto.setCartaResponsivaHa(proyecto.getCartaResponsivaHa().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaGsoc() != null) proyecto.setCartaResponsivaGsoc(proyecto.getCartaResponsivaGsoc().replace(viejo, nuevo));
+        if (proyecto.getCartaResponsivaLlaves() != null) proyecto.setCartaResponsivaLlaves(proyecto.getCartaResponsivaLlaves().replace(viejo, nuevo));
+        if (proyecto.getOtros() != null) proyecto.setOtros(proyecto.getOtros().replace(viejo, nuevo));
+    }
+
+    /**
      * Metodo que realiza el borrado del proyecto a traves de su identificador unico
      * @param idProyecto identificador unico del proyecto
      * @return ResponseEntity de objeto de tipo ProyectoResponseRest
      */
     @Override
     @Transactional
-    public void deleteProyecto(Long idProyecto) {
+    public void deleteProyecto(Long idProyecto, String username) {
 
         // Obtengo el proyecto o se lanza excepcion si no existe
         Proyecto proyecto = proyectoRepository.findById(idProyecto).orElseThrow(() ->
@@ -592,6 +754,13 @@ public class ProyectoServiceImpl implements IProyectoService {
         }
 
         try {
+            // Registro en bitácora antes de borrar de la BD
+            Bitacora bitacora = new Bitacora();
+            bitacora.setAccion("DELETE");
+            bitacora.setUsuario(username);
+            bitacora.setDetalle("Eliminó el proyecto: " + proyecto.getNombre() + " con el ID: " + idProyecto);
+            this.bitacoraRepository.save(bitacora);
+
             // Borrado de la entidad en la base de datos
             proyectoRepository.deleteById(idProyecto);
         } catch (DataIntegrityViolationException ex) {

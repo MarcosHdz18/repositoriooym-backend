@@ -15,7 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author marcos.hernandez
@@ -125,6 +125,42 @@ public class SubirArchivoServiceImpl implements ISubirArchivoService {
 
         // Devuelve la ruta relativa para guardar en BD: "folderName/filename"
         return safeName + "/" +filename;
+    }
+
+    /**
+     * Metodo que realiza la carga de archivos masivos en subcarpeta del proyecto
+     *
+     * @param folderName
+     * @param archivos
+     * @return
+     * @throws IOException
+     */
+    @Override
+    public List<Map<String, String>> guardarAdjuntosMasivosFisicos(String folderName, MultipartFile[] archivos) throws IOException {
+
+        List<Map<String, String>> rutasRelativas = new ArrayList<>();
+
+        // Sanitizamos una sola vez el nombre de la carpeta
+        String safeFolderName = folderName.trim().replaceAll("[\\\\/:*?\"<>| ]+", "_").toUpperCase();
+        Path adjuntosFolder = this.rootLocation.resolve(safeFolderName).resolve("ADJUNTOS");
+
+        // Creamos la carpeta ADJUNTOS
+        Files.createDirectories(adjuntosFolder);
+
+        for (MultipartFile archivo : archivos) {
+            if (archivo != null && !archivo.isEmpty()) {
+                String filename = archivo.getOriginalFilename();
+                Path destination = adjuntosFolder.resolve(filename);
+                Files.copy(archivo.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+                // Guardamos ambos datos para la BD
+                Map<String, String> data = new HashMap<>();
+                data.put("nombre", filename);
+                data.put("ruta", safeFolderName + "/ADJUNTOS/" + filename);
+                rutasRelativas.add(data);
+            }
+        }
+        return rutasRelativas;
     }
 
     /**

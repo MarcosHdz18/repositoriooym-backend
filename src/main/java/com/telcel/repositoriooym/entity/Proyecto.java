@@ -11,7 +11,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author marcos.hernandez
@@ -98,6 +99,18 @@ public class Proyecto implements Serializable {
     private String hld;
 
     /**
+     * Ruta del documento memoria tecnica
+     */
+    @Column(name = "memoria_tecnica", length = 512)
+    private String memoriaTecnica;
+
+    /**
+     * Ruta del documento sid
+     */
+    @Column(name = "sid", length = 512)
+    private String sid;
+
+    /**
      * Ruta del documento del inventario logico
      */
     @Column(name = "layout", length = 512)
@@ -126,6 +139,24 @@ public class Proyecto implements Serializable {
      */
     @Column(name = "asignacion_fuerza_espacio", length = 512)
     private String asignacionFuerzaEspacio;
+
+    /**
+     * Ruta del documento sobre el etiquetado del proyecto
+     */
+    @Column(name = "etiquetado", length = 512)
+    private String etiquetado;
+
+    /**
+     * Ruta del documento sobre los planos del proyecto
+     */
+    @Column(name = "planos", length = 512)
+    private String planos;
+
+    /**
+     * Ruta del documento proyecto_ejecutivo
+     */
+    @Column(name = "proyecto_ejecutivo", length = 512)
+    private String proyectoEjecutivo;
 
     /**
      * Ruta del documento del inventario de hardware del proyecto
@@ -188,6 +219,12 @@ public class Proyecto implements Serializable {
     private String cartaResponsivaGsoc;
 
     /**
+     * Ruta del documento carta responsiva de llaves del proyecto
+     */
+    @Column(name = "carta_responsiva_llaves", length = 512)
+    private String cartaResponsivaLlaves;
+
+    /**
      * Ruta del documento otro
      */
     @Column(name = "otros", length = 512)
@@ -224,4 +261,10 @@ public class Proyecto implements Serializable {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    /**
+     * Documentos adjuntos del proyecto que solo serán de uso unico de el Ing. Juan Gabriel Perdomo
+     */
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, orphanRemoval = true, fetch =  FetchType.EAGER)
+    private List<DocumentoAdjunto> adjuntos = new ArrayList<>();
 }

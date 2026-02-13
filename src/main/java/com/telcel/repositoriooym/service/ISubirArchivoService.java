@@ -1,10 +1,13 @@
 package com.telcel.repositoriooym.service;
 
+import com.telcel.repositoriooym.entity.Proyecto;
 import org.springframework.core.io.Resource;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author marcos.hernandez
@@ -45,4 +48,13 @@ public interface ISubirArchivoService {
      * @throws IOException
      */
     public String copiarArchivoEnSubCarpeta(String folderName, MultipartFile file, boolean overwrite) throws IOException;
+
+    /**
+     * Metodo que realiza la carga de archivos masivos en subcarpeta del proyecto
+     * @param folderName
+     * @param archivos
+     * @return
+     * @throws IOException
+     */
+    public List<Map<String, String>> guardarAdjuntosMasivosFisicos(String folderName, MultipartFile[] archivos) throws IOException;
 }

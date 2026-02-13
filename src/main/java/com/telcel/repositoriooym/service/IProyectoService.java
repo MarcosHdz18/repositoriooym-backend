@@ -38,13 +38,13 @@ public interface IProyectoService {
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
     public ResponseEntity<ProyectoResponseRest> save(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
-                                                     MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                     MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileMemoriaTecnica, MultipartFile fileSid, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
+                                                     MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio, MultipartFile fileEtiquetado, MultipartFile filePlanos, MultipartFile fileProyectoEjecutivo,
                                                      MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                      MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                      MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
-                                                     MultipartFile fileOtros);
+                                                     MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc, MultipartFile fileCartaResponsivaLlaves,
+                                                     MultipartFile fileOtros, MultipartFile[] archivosAdjuntos, String username);
 
     /**
      * Metodo que permite actualizar un objeto de tipo Proyecto en la base de datos
@@ -53,17 +53,17 @@ public interface IProyectoService {
      * @return ResponseEntity del objeto tipo ProductResponseRest
      */
     public ResponseEntity<ProyectoResponseRest> update(Proyecto proyecto, Long responsableId, Long tipoProyectoId, Long sitioId, Long clienteId, String fechaInicio,String fechaLiberacion, MultipartFile fileF60,
-                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
-                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio,
+                                                       MultipartFile fileLld, MultipartFile fileHld, MultipartFile fileMemoriaTecnica, MultipartFile fileSid, MultipartFile fileLayout, MultipartFile fileSla, MultipartFile filePresentacion,
+                                                       MultipartFile fileReporteFotografico, MultipartFile fileAsignacionFuerzaEspacio, MultipartFile fileEtiquetado, MultipartFile filePlanos, MultipartFile fileProyectoEjecutivo,
                                                        MultipartFile fileInventarioHardware, MultipartFile fileAtpFisico, MultipartFile fileAtpFisicoFirmado,
                                                        MultipartFile fileAtpLogico, MultipartFile fileReporteTransferenciaOperativa,
                                                        MultipartFile fileCartaResponsivaIaaS, MultipartFile fileCartaResponsivaPlataforma,
-                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc,
-                                                       MultipartFile fileOtros);
+                                                       MultipartFile fileCartaResponsivaStorage, MultipartFile fileCartaResponsivaHa, MultipartFile fileCartaResponsivaGsoc, MultipartFile fileCartaResponsivaLlaves,
+                                                       MultipartFile fileOtros, MultipartFile[] archivosAdjuntos, String username);
 
     /**
      * Metodo que realiza el borrado del proyecto por su identificador unico
      * @param idProyecto identificador unico del proyecto
      */
-    void deleteProyecto(Long idProyecto);
+    void deleteProyecto(Long idProyecto, String username);
 }

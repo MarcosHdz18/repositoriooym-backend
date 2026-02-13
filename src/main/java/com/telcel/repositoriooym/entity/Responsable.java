@@ -43,7 +43,7 @@ public class Responsable {
      * Numero de empleado del responsable del proyecto
      */
     @Column(name = "numero_empleado")
-    private Integer numeroEmpleado;
+    private String numeroEmpleado;
 
     /**
      * Area a la que pertenecen los responsables de proyecto

@@ -71,22 +71,28 @@ public class ProyectoExcelExporter {
         createCell(row, 11, "Archivo F60", style);
         createCell(row, 12, "Archivo LLD", style);
         createCell(row, 13, "Archivo HLD", style);
-        createCell(row, 14, "Archivo Layout", style);
-        createCell(row, 15, "Archivo SLA", style);
-        createCell(row, 16, "Archivo RTO", style);
-        createCell(row, 17, "Archivo ATP Físico", style);
-        createCell(row, 18, "Archivo ATP Físico Firmado", style);
-        createCell(row, 19, "Archivo ATP Lógico", style);
-        createCell(row, 20, "Archivo ATP Lógico Firmado", style);
-        createCell(row, 21, "Archivo Reporte Fotográfico", style);
-        createCell(row, 22, "Archivo Asignación Fuerza-Espacio", style);
-        createCell(row, 23, "Archivo Inventario Hardware", style);
-        createCell(row, 24, "Archivo Carta Responsiva IaaS", style);
-        createCell(row, 25, "Archivo Carta Responsiva Plataforma", style);
-        createCell(row, 26, "Archivo Carta Responsiva Storage", style);
-        createCell(row, 27, "Archivo Carta Responsiva HA", style);
-        createCell(row, 28, "Archivo Carta Responsiva GSOC", style);
-        createCell(row, 29, "Archivo Otros", style);
+        createCell(row, 14, "Archivo Memoria Técnica", style);
+        createCell(row, 15, "Archivo SID", style);
+        createCell(row, 16, "Archivo Layout", style);
+        createCell(row, 17, "Archivo SLA", style);
+        createCell(row, 18, "Archivo RTO", style);
+        createCell(row, 19, "Archivo ATP Físico", style);
+        createCell(row, 20, "Archivo ATP Físico Firmado", style);
+        createCell(row, 21, "Archivo ATP Lógico", style);
+        createCell(row, 22, "Archivo ATP Lógico Firmado", style);
+        createCell(row, 23, "Archivo Reporte Fotográfico", style);
+        createCell(row, 24, "Archivo Asignación Fuerza-Espacio", style);
+        createCell(row, 25, "Archivo Etiquetado", style);
+        createCell(row, 26, "Archivo Planos", style);
+        createCell(row, 27, "Archivo Proyecto Ejecutivo", style);
+        createCell(row, 28, "Archivo Inventario Hardware", style);
+        createCell(row, 29, "Archivo Carta Responsiva IaaS", style);
+        createCell(row, 30, "Archivo Carta Responsiva Plataforma", style);
+        createCell(row, 31, "Archivo Carta Responsiva Storage", style);
+        createCell(row, 32, "Archivo Carta Responsiva HA", style);
+        createCell(row, 33, "Archivo Carta Responsiva GSOC", style);
+        createCell(row, 34, "Archivo Carta Responsiva Llaves", style);
+        createCell(row, 35, "Archivo Otros", style);
     }
 
     /**
@@ -139,6 +145,8 @@ public class ProyectoExcelExporter {
             createCell(row, columnCount++, proyecto.getF60(), style);
             createCell(row, columnCount++, proyecto.getLld(), style);
             createCell(row, columnCount++, proyecto.getHld(), style);
+            createCell(row, columnCount++, proyecto.getMemoriaTecnica(), style);
+            createCell(row, columnCount++, proyecto.getSid(), style);
             createCell(row, columnCount++, proyecto.getLayout(), style);
             createCell(row, columnCount++, proyecto.getPresentacion(), style);
             createCell(row, columnCount++, proyecto.getSla(), style);
@@ -148,12 +156,16 @@ public class ProyectoExcelExporter {
             createCell(row, columnCount++, proyecto.getAtpLogico(), style);
             createCell(row, columnCount++, proyecto.getReporteFotografico(), style);
             createCell(row, columnCount++, proyecto.getAsignacionFuerzaEspacio(), style);
+            createCell(row, columnCount++, proyecto.getEtiquetado(), style);
+            createCell(row, columnCount++, proyecto.getPlanos(), style);
+            createCell(row, columnCount++, proyecto.getProyectoEjecutivo(), style);
             createCell(row, columnCount++, proyecto.getInventarioHardware(), style);
             createCell(row, columnCount++, proyecto.getCartaResponsivaIaaS(), style);
             createCell(row, columnCount++, proyecto.getCartaResponsivaPlataforma(), style);
             createCell(row, columnCount++, proyecto.getCartaResponsivaStorage(), style);
             createCell(row, columnCount++, proyecto.getCartaResponsivaHa(), style);
             createCell(row, columnCount++, proyecto.getCartaResponsivaGsoc(), style);
+            createCell(row, columnCount++, proyecto.getCartaResponsivaLlaves(), style);
             createCell(row, columnCount++, proyecto.getOtros(), style);
         }
     }

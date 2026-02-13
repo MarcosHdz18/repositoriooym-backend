@@ -61,7 +61,7 @@ public class ResponsableRestController {
     public ResponseEntity<ResponsableResponseRest> saveResponsable(@RequestParam("nombre") String nombre,
                                                                    @RequestParam("apellidoPaterno") String apellidoPaterno,
                                                                    @RequestParam("apellidoMaterno") String apellidoMaterno,
-                                                                   @RequestParam("numeroEmpleado") Integer numeroEmpleado,
+                                                                   @RequestParam("numeroEmpleado") String numeroEmpleado,
                                                                    @RequestParam("areaId") Long areaId) throws IOException {
 
         Responsable responsable = new Responsable();
@@ -88,7 +88,7 @@ public class ResponsableRestController {
     public ResponseEntity<ResponsableResponseRest> updateResponsable(@RequestParam("nombre") String nombre,
                                                                      @RequestParam("apellidoPaterno") String apellidoPaterno,
                                                                      @RequestParam("apellidoMaterno") String apellidoMaterno,
-                                                                     @RequestParam("numeroEmpleado") Integer numeroEmpleado,
+                                                                     @RequestParam("numeroEmpleado") String numeroEmpleado,
                                                                      @RequestParam("areaId") Long areaId,
                                                                      @PathVariable Long idResponsable) throws IOException {
 

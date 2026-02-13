@@ -1,6 +1,8 @@
 package com.telcel.repositoriooym.controller;
 
+import com.telcel.repositoriooym.entity.DocumentoAdjunto;
 import com.telcel.repositoriooym.entity.Proyecto;
+import com.telcel.repositoriooym.repository.IDocumentoAdjuntoRepository;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
 import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
@@ -61,6 +63,9 @@ public class ProyectoRestController {
      */
     @Autowired
     private ISubirArchivoService uploadFileService;
+
+    @Autowired
+    private IDocumentoAdjuntoRepository documentoAdjunto;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -128,11 +133,16 @@ public class ProyectoRestController {
             @RequestParam(value = "fileF60", required = false) MultipartFile fileF60,
             @RequestParam(value = "fileLld", required = false) MultipartFile fileLld,
             @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
+            @RequestParam(value = "fileMemoriaTecnica",  required = false) MultipartFile fileMemoriaTecnica,
+            @RequestParam(value = "fileSid", required = false) MultipartFile fileSid,
             @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
             @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
             @RequestParam(value = "filePresentacion", required = false) MultipartFile filePresentacion,
             @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
             @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
+            @RequestParam(value = "fileEtiquetado",  required = false) MultipartFile fileEtiquetado,
+            @RequestParam(value = "filePlanos",  required = false) MultipartFile filePlanos,
+            @RequestParam(value = "fileProyectoEjecutivo",  required = false) MultipartFile fileProyectoEjecutivo,
             @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
             @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
             @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
@@ -143,7 +153,10 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
             @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam(value = "fileCartaResponsivaLlaves",  required = false) MultipartFile fileCartaResponsivaLlaves,
             @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
+            @RequestParam(value = "archivosAdicionales", required = false) MultipartFile[] archivosAdjuntos,
+            @RequestParam("usuarioActivo") String username,
             @RequestParam("nombre") String nombre,
             @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
@@ -169,10 +182,11 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
-                    filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
-                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
-                    fileCartaResponsivaHa, fileCartaResponsivaGsoc, fileOtros);
+            this.proyectoService.save(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileMemoriaTecnica,
+                    fileSid, fileLayout, fileSla, filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileEtiquetado, filePlanos, fileProyectoEjecutivo,
+                    fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS,
+                    fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa, fileCartaResponsivaGsoc, fileCartaResponsivaLlaves, fileOtros,
+                    archivosAdjuntos, username);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -219,11 +233,16 @@ public class ProyectoRestController {
             @RequestParam(value = "fileF60", required = false) MultipartFile fileF60,
             @RequestParam(value = "fileLld", required = false) MultipartFile fileLld,
             @RequestParam(value = "fileHld", required = false) MultipartFile fileHld,
+            @RequestParam(value = "fileMemoriaTecnica",  required = false) MultipartFile fileMemoriaTecnica,
+            @RequestParam(value = "fileSid",  required = false) MultipartFile fileSid,
             @RequestParam(value = "fileLayout", required = false) MultipartFile fileLayout,
             @RequestParam(value = "fileSla", required = false) MultipartFile fileSla,
             @RequestParam(value = "filePresentacion", required = false) MultipartFile filePresentacion,
             @RequestParam(value = "fileReporteFotografico", required = false) MultipartFile fileReporteFotografico,
             @RequestParam(value = "fileAsignacionFuerzaEspacio", required = false) MultipartFile fileAsignacionFuerzaEspacio,
+            @RequestParam(value = "fileEtiquetado",  required = false) MultipartFile fileEtiquetado,
+            @RequestParam(value = "filePlanos",  required = false) MultipartFile filePlanos,
+            @RequestParam(value = "fileProyectoEjecutivo",  required = false) MultipartFile fileProyectoEjecutivo,
             @RequestParam(value = "fileInventarioHardware", required = false) MultipartFile fileInventarioHardware,
             @RequestParam(value = "fileAtpFisico", required = false) MultipartFile fileAtpFisico,
             @RequestParam(value = "fileAtpFisicoFirmado", required = false) MultipartFile fileAtpFisicoFirmado,
@@ -234,7 +253,10 @@ public class ProyectoRestController {
             @RequestParam(value = "fileCartaResponsivaStorage", required = false) MultipartFile fileCartaResponsivaStorage,
             @RequestParam(value = "fileCartaResponsivaHa", required = false) MultipartFile fileCartaResponsivaHa,
             @RequestParam(value = "fileCartaResponsivaGsoc", required = false) MultipartFile fileCartaResponsivaGsoc,
+            @RequestParam(value = "fileCartaResponsivaLlaves",  required = false) MultipartFile fileCartaResponsivaLlaves,
             @RequestParam(value = "fileOtros", required = false) MultipartFile fileOtros,
+            @RequestParam(value = "archivosAdicionales", required = false) MultipartFile[] archivosAdjuntos,
+            @RequestParam("usuarioActivo") String username,
             @RequestParam(value = "nombre") String nombre,
             @RequestParam(value = "fechaInicio", required = false) String fechaInicio,
             @RequestParam(value = "fechaLiberacion", required = false) String fechaLiberacion,
@@ -259,10 +281,11 @@ public class ProyectoRestController {
             proyecto.setFechaLiberacion(fechaLiberacion);
             proyecto.setNodos(nodos);
 
-            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld, fileLayout, fileSla,
-                    filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico,
-                    fileReporteTransferenciaOperativa, fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage,
-                    fileCartaResponsivaHa, fileCartaResponsivaGsoc,fileOtros);
+            this.proyectoService.update(proyecto, responsableId, tipoProyectoId, sitioId, clienteId, fechaInicio, fechaLiberacion, fileF60, fileLld, fileHld,
+                    fileMemoriaTecnica, fileSid, fileLayout, fileSla, filePresentacion, fileReporteFotografico, fileAsignacionFuerzaEspacio, fileEtiquetado, filePlanos,
+                    fileProyectoEjecutivo, fileInventarioHardware, fileAtpFisico, fileAtpFisicoFirmado, fileAtpLogico, fileReporteTransferenciaOperativa,
+                    fileCartaResponsivaIaaS, fileCartaResponsivaPlataforma, fileCartaResponsivaStorage, fileCartaResponsivaHa, fileCartaResponsivaGsoc, fileCartaResponsivaLlaves,
+                    fileOtros, archivosAdjuntos,username);
 
             meta.put("code", "00");
             meta.put("data", "Proyecto guardado con éxito");
@@ -296,11 +319,16 @@ public class ProyectoRestController {
             case "f60": filename = proyecto.getF60(); break;
             case "lld": filename = proyecto.getLld(); break;
             case "hld": filename = proyecto.getHld(); break;
+            case "memoriatecnica": filename = proyecto.getMemoriaTecnica(); break;
+            case "sid": filename = proyecto.getSid(); break;
             case "layout": filename = proyecto.getLayout(); break;
             case "presentacion": filename = proyecto.getPresentacion(); break;
             case "sla": filename = proyecto.getSla(); break;
             case "reportefotografico": filename = proyecto.getReporteFotografico(); break;
             case "asignacionfuerzaespacio": filename = proyecto.getAsignacionFuerzaEspacio(); break;
+            case "etiquetado": filename = proyecto.getEtiquetado(); break;
+            case "planos": filename = proyecto.getPlanos(); break;
+            case "proyectoejecutivo": filename = proyecto.getProyectoEjecutivo(); break;
             case "inventariohardware": filename = proyecto.getInventarioHardware(); break;
             case "atpfisico": filename = proyecto.getAtpFisico(); break;
             case "atpfisicofirmado": filename = proyecto.getAtpFisicoFirmado(); break;
@@ -311,6 +339,7 @@ public class ProyectoRestController {
             case "cartaresponsivastorage": filename = proyecto.getCartaResponsivaStorage(); break;
             case "cartaresponsivaha": filename = proyecto.getCartaResponsivaHa(); break;
             case "cartaresponsivagsoc": filename = proyecto.getCartaResponsivaGsoc(); break;
+            case "cartaresponsivallaves": filename = proyecto.getCartaResponsivaLlaves(); break;
             case "otros": filename = proyecto.getOtros(); break;
             default:
                 throw new ResponseStatusException(
@@ -330,14 +359,36 @@ public class ProyectoRestController {
     }
 
     /**
+     * Metodo para descarga de archivos adjuntos
+     * @param idAdjunto
+     * @return
+     * @throws MalformedURLException
+     */
+    @GetMapping(value = "/proyectos/adjuntos/descargar/{idAdjunto}", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> descargarAdjunto(@PathVariable Long idAdjunto) throws MalformedURLException {
+        // 1. Buscamos el registro en la tabla de adjuntos
+        DocumentoAdjunto adjunto = this.documentoAdjunto.findById(idAdjunto)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Archivo adjunto no encontrado"));
+
+        // 2. Cargamos el archivo físico
+        Resource recurso = uploadFileService.cargarArchivo(adjunto.getRutaArchivo());
+
+        // 3. Retornamos para descarga
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + adjunto.getNombreArchivo() + "\"")
+                .body(recurso);
+    }
+
+    /**
      * Metodo que realiza el borrado de un registro por su identificador unico
      * @param idProyecto identificador unico del proyecto a eliminar
      * @return ResponseEntity de tipo ProyectoResponseRest
      */
     @DeleteMapping("/proyectos/{idProyecto}")
-    public ResponseEntity<Void> deleteProyectoById(@PathVariable Long idProyecto) {
+    public ResponseEntity<Void> deleteProyectoById(@PathVariable Long idProyecto, @RequestParam("usuarioActivo") String username) {
 
-        proyectoService.deleteProyecto(idProyecto);
+        proyectoService.deleteProyecto(idProyecto,  username);
 
         return ResponseEntity.noContent().build();
     }
