@@ -594,14 +594,38 @@ public class ProyectoServiceImpl implements IProyectoService {
             BiFunction<MultipartFile, String, String> guardarODefault = (mpf, defecto) -> {
                 if (mpf != null && !mpf.isEmpty()) {
                     try {
-                        return uploadFileService.copiarArchivoEnSubCarpeta(
-                                proyectoActualizado.getNombre(), mpf, true);
+                        if (defecto != null && !defecto.trim().equalsIgnoreCase("NA")) {
+
+                            Path pathBase = Paths.get(documentacionProyectos);
+                            Path rutaRelativa = Paths.get(defecto);
+
+                            Path rutaCompletaArchivo = pathBase.resolve(rutaRelativa).toAbsolutePath().normalize();
+
+                            logger.info("Intentando eliminar archivo viejo en:: {}", rutaCompletaArchivo);
+
+                            if (Files.exists(rutaCompletaArchivo)) {
+                                Files.delete(rutaCompletaArchivo);
+                                logger.info("🗑️ Limpieza: Archivo anterior eliminado físicamente: {}", rutaCompletaArchivo.getFileName());
+                            } else  {
+                                // Intento de respaldo: Probar ruta que viene de la base de datos
+                                Path rutaDirecta = Paths.get(defecto).toAbsolutePath().normalize();
+                                if (Files.exists(rutaDirecta)) {
+                                    Files.delete(rutaDirecta);
+                                    logger.info("🗑️ Limpieza (Ruta Directa): Archivo eliminado.");
+                                } else {
+                                    logger.warn("No se pudo encontrar el archivo físico para borrar ninguna de las rutas.");
+                                }
+                            }
+                        }
+                        // Subida normal despues de borrar
+                        return uploadFileService.copiarArchivoEnSubCarpeta(proyectoActualizado.getNombre(), mpf, true);
+
                     } catch (IOException e) {
                         logger.error("Error al copiar {} en subcarpeta {}: {}",
                                 mpf.getOriginalFilename(),
                                 proyectoActualizado.getNombre(),
                                 e.getMessage(), e);
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Error en el reemplazo físico del archivo", e);
                     }
                 } else {
                     // se podra usar el valor antiguamente guardado, si se prefiere:
@@ -654,13 +678,27 @@ public class ProyectoServiceImpl implements IProyectoService {
 
                     // 2. Lógica de la Entity: Guardamos cada uno en la BD
                     for (Map<String, String> datos : adjuntosGuardados) {
-                        DocumentoAdjunto documentoAdjunto = new DocumentoAdjunto();
-                        documentoAdjunto.setNombreArchivo(datos.get("nombre"));
-                        documentoAdjunto.setRutaArchivo(datos.get("ruta"));
-                        documentoAdjunto.setUsuarioSubio(username); // Usamos el username aquí en el Service de Proyectos
-                        documentoAdjunto.setProyecto(proyectoActualizado);
 
-                        this.adjuntoRepository.save(documentoAdjunto);
+                        String nombreArchivo = datos.get("nombre");
+
+                        Optional<DocumentoAdjunto> existente = adjuntoRepository.findByNombreArchivoAndProyecto_IdProyecto(nombreArchivo, proyectoActualizado.getIdProyecto());
+
+                        if (existente.isPresent()) {
+                            DocumentoAdjunto doc = existente.get();
+                            doc.setUsuarioSubio(username);
+                            doc.setRutaArchivo(datos.get("ruta"));
+                            this.adjuntoRepository.save(doc);
+                            logger.info("✔ Registro actualizado en BD para el archivo: {}", nombreArchivo);
+                        } else {
+                            DocumentoAdjunto documentoAdjunto = new DocumentoAdjunto();
+                            documentoAdjunto.setNombreArchivo(datos.get("nombre"));
+                            documentoAdjunto.setRutaArchivo(datos.get("ruta"));
+                            documentoAdjunto.setUsuarioSubio(username); // Usamos el username aquí en el Service de Proyectos
+                            documentoAdjunto.setProyecto(proyectoActualizado);
+
+                            this.adjuntoRepository.save(documentoAdjunto);
+                            logger.info("➕ Nuevo registro creado en BD para el archivo: {}", nombreArchivo);
+                        }
                     }
                 } catch (IOException e) {
                     logger.error("Error al procesar adjuntos: {}", e.getMessage());
@@ -708,6 +746,18 @@ public class ProyectoServiceImpl implements IProyectoService {
         if (proyecto.getCartaResponsivaGsoc() != null) proyecto.setCartaResponsivaGsoc(proyecto.getCartaResponsivaGsoc().replace(viejo, nuevo));
         if (proyecto.getCartaResponsivaLlaves() != null) proyecto.setCartaResponsivaLlaves(proyecto.getCartaResponsivaLlaves().replace(viejo, nuevo));
         if (proyecto.getOtros() != null) proyecto.setOtros(proyecto.getOtros().replace(viejo, nuevo));
+
+        // Renombrado de los documentos adicionales en referencias en base de datos
+        List<DocumentoAdjunto> adjuntos = proyecto.getAdjuntos();
+        if (adjuntos != null && !adjuntos.isEmpty()) {
+            for (DocumentoAdjunto adj : adjuntos) {
+                if (adj.getRutaArchivo() != null) {
+                    String nuevaRuta = adj.getRutaArchivo().replace(viejo, nuevo);
+                    adj.setRutaArchivo(nuevaRuta);
+                    logger.info("✔ Ruta de adjunto actualizada: {}", adj.getNombreArchivo());
+                }
+            }
+        }
     }
 
     /**

@@ -1,17 +1,17 @@
 package com.telcel.repositoriooym.controller;
 
+import com.telcel.repositoriooym.entity.Bitacora;
 import com.telcel.repositoriooym.entity.DocumentoAdjunto;
 import com.telcel.repositoriooym.entity.Proyecto;
+import com.telcel.repositoriooym.repository.IBitacoraRepository;
 import com.telcel.repositoriooym.repository.IDocumentoAdjuntoRepository;
 import com.telcel.repositoriooym.repository.IProyectoRepository;
-import com.telcel.repositoriooym.response.ProyectoResponse;
 import com.telcel.repositoriooym.response.ProyectoResponseRest;
-import com.telcel.repositoriooym.response.ResponsableResponseRest;
 import com.telcel.repositoriooym.service.IProyectoService;
 import com.telcel.repositoriooym.service.ISubirArchivoService;
 import com.telcel.repositoriooym.utils.ProyectoExcelExporter;
-import com.telcel.repositoriooym.utils.ResponsableExcelExporter;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -29,13 +29,15 @@ import org.slf4j.LoggerFactory;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.BiFunction;
 
 /**
  * @author marcos.hernandez
@@ -59,13 +61,19 @@ public class ProyectoRestController {
     private IProyectoService proyectoService;
 
     /**
-     * Objeto de tipo ISubirArchivoService que ayudara a subir el archivo a la carpeta uploads
+     * Objeto de tipo ISubirArchivoService que ayudara a subir el archivo a la carpeta documentacion_proyectos
      */
     @Autowired
     private ISubirArchivoService uploadFileService;
 
+    /**
+     * Objeto de tipo IDocumentoAdjuntoRepository que ayudara a subir el archivo adicional a la carpeta documentacion_proyectos/ADJUNTOS/
+     */
     @Autowired
     private IDocumentoAdjuntoRepository documentoAdjunto;
+
+    @Autowired
+    private IBitacoraRepository bitacoraRepository;
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
@@ -391,6 +399,52 @@ public class ProyectoRestController {
         proyectoService.deleteProyecto(idProyecto,  username);
 
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Metodo que realiza el borrado de un registro por su identificador unico
+     * @param idArchivoAdjunto identificador unico del archivo adjunto a eliminar
+     * @param username usuario que realiza la acción
+     * @return ResponseEntity de tipo DocumentoAdjunto
+     */
+    @Transactional
+    @DeleteMapping("/proyectos/adjuntos/eliminar/{idArchivoAdjunto}")
+    public ResponseEntity<Void> deleteArchivoAdjunto(@PathVariable Long idArchivoAdjunto, @RequestParam("usuarioActivo") String username) throws IOException {
+
+        return this.documentoAdjunto.findById(idArchivoAdjunto).map(archivo -> {
+            DocumentoAdjunto archivoAdjunto = this.documentoAdjunto.findById(idArchivoAdjunto).orElse(null);
+
+            if (archivoAdjunto != null) {
+
+                try {
+                    String nombreCarpetaProyecto = archivoAdjunto.getProyecto().getNombre();
+                    Path rutaArchivo = Paths.get("documentacion_proyectos", archivoAdjunto.getRutaArchivo()).toAbsolutePath().normalize();
+
+                    logger.info("Intentando borrar archivo en: "  + rutaArchivo);
+
+                    if (Files.exists(rutaArchivo)) {
+                        Files.delete(rutaArchivo);
+                        logger.info("¡EXITO! Archivo eliminado físicamente del servidor.");
+                    } else {
+                        // Si aún así no lo encuentra, intentamos con la ruta guardada en DB por si acaso
+                        Path rutaRespaldo = Paths.get(archivoAdjunto.getRutaArchivo()).toAbsolutePath().normalize();
+                        Files.deleteIfExists(rutaRespaldo);
+                        logger.warn("Se usó ruta de respaldo para el borrado.");
+                    }
+                } catch (Exception e) {
+                    logger.error("Error de E/S al eliminar el archivo: " + e.getMessage());
+                }
+
+                Bitacora bitacora = new Bitacora();
+                bitacora.setUsuario(username);
+                bitacora.setAccion("DELETE");
+                bitacora.setDetalle("Eliminó el archivo adicional [" + archivoAdjunto.getNombreArchivo() + "] del proyecto " + archivoAdjunto.getProyecto().getNombre());
+                this.bitacoraRepository.save(bitacora);
+
+                this.documentoAdjunto.deleteByIdIndividual(idArchivoAdjunto);
+            }
+            return ResponseEntity.ok().<Void>build();
+        }).orElse(ResponseEntity.notFound().build());
     }
 
     /**
